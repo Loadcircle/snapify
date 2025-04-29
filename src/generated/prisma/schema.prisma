@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id         String   @id @default(cuid())
+  title      String // nombre personalizado del evento
+  code       String   @unique
+  maxPhotos  Int
+  usedPhotos Int      @default(0) // contador de fotos subidas
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  photos     Photo[]
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id])
+  url       String // url en GCP storage
+  creator   String // nombre del creador de la foto
+  createdAt DateTime @default(now())
+}
