@@ -2130,14 +2130,29 @@ export namespace Prisma {
 
   export type AggregatePhoto = {
     _count: PhotoCountAggregateOutputType | null
+    _avg: PhotoAvgAggregateOutputType | null
+    _sum: PhotoSumAggregateOutputType | null
     _min: PhotoMinAggregateOutputType | null
     _max: PhotoMaxAggregateOutputType | null
+  }
+
+  export type PhotoAvgAggregateOutputType = {
+    width: number | null
+    height: number | null
+  }
+
+  export type PhotoSumAggregateOutputType = {
+    width: number | null
+    height: number | null
   }
 
   export type PhotoMinAggregateOutputType = {
     id: string | null
     eventId: string | null
     url: string | null
+    publicId: string | null
+    width: number | null
+    height: number | null
     creator: string | null
     createdAt: Date | null
   }
@@ -2146,6 +2161,9 @@ export namespace Prisma {
     id: string | null
     eventId: string | null
     url: string | null
+    publicId: string | null
+    width: number | null
+    height: number | null
     creator: string | null
     createdAt: Date | null
   }
@@ -2154,16 +2172,32 @@ export namespace Prisma {
     id: number
     eventId: number
     url: number
+    publicId: number
+    width: number
+    height: number
     creator: number
     createdAt: number
     _all: number
   }
 
 
+  export type PhotoAvgAggregateInputType = {
+    width?: true
+    height?: true
+  }
+
+  export type PhotoSumAggregateInputType = {
+    width?: true
+    height?: true
+  }
+
   export type PhotoMinAggregateInputType = {
     id?: true
     eventId?: true
     url?: true
+    publicId?: true
+    width?: true
+    height?: true
     creator?: true
     createdAt?: true
   }
@@ -2172,6 +2206,9 @@ export namespace Prisma {
     id?: true
     eventId?: true
     url?: true
+    publicId?: true
+    width?: true
+    height?: true
     creator?: true
     createdAt?: true
   }
@@ -2180,6 +2217,9 @@ export namespace Prisma {
     id?: true
     eventId?: true
     url?: true
+    publicId?: true
+    width?: true
+    height?: true
     creator?: true
     createdAt?: true
     _all?: true
@@ -2223,6 +2263,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: PhotoAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PhotoSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: PhotoMinAggregateInputType
@@ -2253,6 +2305,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: PhotoCountAggregateInputType | true
+    _avg?: PhotoAvgAggregateInputType
+    _sum?: PhotoSumAggregateInputType
     _min?: PhotoMinAggregateInputType
     _max?: PhotoMaxAggregateInputType
   }
@@ -2261,9 +2315,14 @@ export namespace Prisma {
     id: string
     eventId: string
     url: string
+    publicId: string
+    width: number
+    height: number
     creator: string
     createdAt: Date
     _count: PhotoCountAggregateOutputType | null
+    _avg: PhotoAvgAggregateOutputType | null
+    _sum: PhotoSumAggregateOutputType | null
     _min: PhotoMinAggregateOutputType | null
     _max: PhotoMaxAggregateOutputType | null
   }
@@ -2286,6 +2345,9 @@ export namespace Prisma {
     id?: boolean
     eventId?: boolean
     url?: boolean
+    publicId?: boolean
+    width?: boolean
+    height?: boolean
     creator?: boolean
     createdAt?: boolean
     event?: boolean | EventDefaultArgs<ExtArgs>
@@ -2295,6 +2357,9 @@ export namespace Prisma {
     id?: boolean
     eventId?: boolean
     url?: boolean
+    publicId?: boolean
+    width?: boolean
+    height?: boolean
     creator?: boolean
     createdAt?: boolean
     event?: boolean | EventDefaultArgs<ExtArgs>
@@ -2304,6 +2369,9 @@ export namespace Prisma {
     id?: boolean
     eventId?: boolean
     url?: boolean
+    publicId?: boolean
+    width?: boolean
+    height?: boolean
     creator?: boolean
     createdAt?: boolean
     event?: boolean | EventDefaultArgs<ExtArgs>
@@ -2313,11 +2381,14 @@ export namespace Prisma {
     id?: boolean
     eventId?: boolean
     url?: boolean
+    publicId?: boolean
+    width?: boolean
+    height?: boolean
     creator?: boolean
     createdAt?: boolean
   }
 
-  export type PhotoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "eventId" | "url" | "creator" | "createdAt", ExtArgs["result"]["photo"]>
+  export type PhotoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "eventId" | "url" | "publicId" | "width" | "height" | "creator" | "createdAt", ExtArgs["result"]["photo"]>
   export type PhotoInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     event?: boolean | EventDefaultArgs<ExtArgs>
   }
@@ -2337,6 +2408,9 @@ export namespace Prisma {
       id: string
       eventId: string
       url: string
+      publicId: string
+      width: number
+      height: number
       creator: string
       createdAt: Date
     }, ExtArgs["result"]["photo"]>
@@ -2766,6 +2840,9 @@ export namespace Prisma {
     readonly id: FieldRef<"Photo", 'String'>
     readonly eventId: FieldRef<"Photo", 'String'>
     readonly url: FieldRef<"Photo", 'String'>
+    readonly publicId: FieldRef<"Photo", 'String'>
+    readonly width: FieldRef<"Photo", 'Int'>
+    readonly height: FieldRef<"Photo", 'Int'>
     readonly creator: FieldRef<"Photo", 'String'>
     readonly createdAt: FieldRef<"Photo", 'DateTime'>
   }
@@ -3213,6 +3290,9 @@ export namespace Prisma {
     id: 'id',
     eventId: 'eventId',
     url: 'url',
+    publicId: 'publicId',
+    width: 'width',
+    height: 'height',
     creator: 'creator',
     createdAt: 'createdAt'
   };
@@ -3374,6 +3454,9 @@ export namespace Prisma {
     id?: StringFilter<"Photo"> | string
     eventId?: StringFilter<"Photo"> | string
     url?: StringFilter<"Photo"> | string
+    publicId?: StringFilter<"Photo"> | string
+    width?: IntFilter<"Photo"> | number
+    height?: IntFilter<"Photo"> | number
     creator?: StringFilter<"Photo"> | string
     createdAt?: DateTimeFilter<"Photo"> | Date | string
     event?: XOR<EventScalarRelationFilter, EventWhereInput>
@@ -3383,6 +3466,9 @@ export namespace Prisma {
     id?: SortOrder
     eventId?: SortOrder
     url?: SortOrder
+    publicId?: SortOrder
+    width?: SortOrder
+    height?: SortOrder
     creator?: SortOrder
     createdAt?: SortOrder
     event?: EventOrderByWithRelationInput
@@ -3395,6 +3481,9 @@ export namespace Prisma {
     NOT?: PhotoWhereInput | PhotoWhereInput[]
     eventId?: StringFilter<"Photo"> | string
     url?: StringFilter<"Photo"> | string
+    publicId?: StringFilter<"Photo"> | string
+    width?: IntFilter<"Photo"> | number
+    height?: IntFilter<"Photo"> | number
     creator?: StringFilter<"Photo"> | string
     createdAt?: DateTimeFilter<"Photo"> | Date | string
     event?: XOR<EventScalarRelationFilter, EventWhereInput>
@@ -3404,11 +3493,16 @@ export namespace Prisma {
     id?: SortOrder
     eventId?: SortOrder
     url?: SortOrder
+    publicId?: SortOrder
+    width?: SortOrder
+    height?: SortOrder
     creator?: SortOrder
     createdAt?: SortOrder
     _count?: PhotoCountOrderByAggregateInput
+    _avg?: PhotoAvgOrderByAggregateInput
     _max?: PhotoMaxOrderByAggregateInput
     _min?: PhotoMinOrderByAggregateInput
+    _sum?: PhotoSumOrderByAggregateInput
   }
 
   export type PhotoScalarWhereWithAggregatesInput = {
@@ -3418,6 +3512,9 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Photo"> | string
     eventId?: StringWithAggregatesFilter<"Photo"> | string
     url?: StringWithAggregatesFilter<"Photo"> | string
+    publicId?: StringWithAggregatesFilter<"Photo"> | string
+    width?: IntWithAggregatesFilter<"Photo"> | number
+    height?: IntWithAggregatesFilter<"Photo"> | number
     creator?: StringWithAggregatesFilter<"Photo"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Photo"> | Date | string
   }
@@ -3499,6 +3596,9 @@ export namespace Prisma {
   export type PhotoCreateInput = {
     id?: string
     url: string
+    publicId: string
+    width?: number
+    height?: number
     creator: string
     createdAt?: Date | string
     event: EventCreateNestedOneWithoutPhotosInput
@@ -3508,6 +3608,9 @@ export namespace Prisma {
     id?: string
     eventId: string
     url: string
+    publicId: string
+    width?: number
+    height?: number
     creator: string
     createdAt?: Date | string
   }
@@ -3515,6 +3618,9 @@ export namespace Prisma {
   export type PhotoUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    width?: IntFieldUpdateOperationsInput | number
+    height?: IntFieldUpdateOperationsInput | number
     creator?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     event?: EventUpdateOneRequiredWithoutPhotosNestedInput
@@ -3524,6 +3630,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     eventId?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    width?: IntFieldUpdateOperationsInput | number
+    height?: IntFieldUpdateOperationsInput | number
     creator?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3532,6 +3641,9 @@ export namespace Prisma {
     id?: string
     eventId: string
     url: string
+    publicId: string
+    width?: number
+    height?: number
     creator: string
     createdAt?: Date | string
   }
@@ -3539,6 +3651,9 @@ export namespace Prisma {
   export type PhotoUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    width?: IntFieldUpdateOperationsInput | number
+    height?: IntFieldUpdateOperationsInput | number
     creator?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3547,6 +3662,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     eventId?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    width?: IntFieldUpdateOperationsInput | number
+    height?: IntFieldUpdateOperationsInput | number
     creator?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3695,14 +3813,25 @@ export namespace Prisma {
     id?: SortOrder
     eventId?: SortOrder
     url?: SortOrder
+    publicId?: SortOrder
+    width?: SortOrder
+    height?: SortOrder
     creator?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type PhotoAvgOrderByAggregateInput = {
+    width?: SortOrder
+    height?: SortOrder
   }
 
   export type PhotoMaxOrderByAggregateInput = {
     id?: SortOrder
     eventId?: SortOrder
     url?: SortOrder
+    publicId?: SortOrder
+    width?: SortOrder
+    height?: SortOrder
     creator?: SortOrder
     createdAt?: SortOrder
   }
@@ -3711,8 +3840,16 @@ export namespace Prisma {
     id?: SortOrder
     eventId?: SortOrder
     url?: SortOrder
+    publicId?: SortOrder
+    width?: SortOrder
+    height?: SortOrder
     creator?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type PhotoSumOrderByAggregateInput = {
+    width?: SortOrder
+    height?: SortOrder
   }
 
   export type PhotoCreateNestedManyWithoutEventInput = {
@@ -3884,6 +4021,9 @@ export namespace Prisma {
   export type PhotoCreateWithoutEventInput = {
     id?: string
     url: string
+    publicId: string
+    width?: number
+    height?: number
     creator: string
     createdAt?: Date | string
   }
@@ -3891,6 +4031,9 @@ export namespace Prisma {
   export type PhotoUncheckedCreateWithoutEventInput = {
     id?: string
     url: string
+    publicId: string
+    width?: number
+    height?: number
     creator: string
     createdAt?: Date | string
   }
@@ -3928,6 +4071,9 @@ export namespace Prisma {
     id?: StringFilter<"Photo"> | string
     eventId?: StringFilter<"Photo"> | string
     url?: StringFilter<"Photo"> | string
+    publicId?: StringFilter<"Photo"> | string
+    width?: IntFilter<"Photo"> | number
+    height?: IntFilter<"Photo"> | number
     creator?: StringFilter<"Photo"> | string
     createdAt?: DateTimeFilter<"Photo"> | Date | string
   }
@@ -3991,6 +4137,9 @@ export namespace Prisma {
   export type PhotoCreateManyEventInput = {
     id?: string
     url: string
+    publicId: string
+    width?: number
+    height?: number
     creator: string
     createdAt?: Date | string
   }
@@ -3998,6 +4147,9 @@ export namespace Prisma {
   export type PhotoUpdateWithoutEventInput = {
     id?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    width?: IntFieldUpdateOperationsInput | number
+    height?: IntFieldUpdateOperationsInput | number
     creator?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4005,6 +4157,9 @@ export namespace Prisma {
   export type PhotoUncheckedUpdateWithoutEventInput = {
     id?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    width?: IntFieldUpdateOperationsInput | number
+    height?: IntFieldUpdateOperationsInput | number
     creator?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4012,6 +4167,9 @@ export namespace Prisma {
   export type PhotoUncheckedUpdateManyWithoutEventInput = {
     id?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
+    publicId?: StringFieldUpdateOperationsInput | string
+    width?: IntFieldUpdateOperationsInput | number
+    height?: IntFieldUpdateOperationsInput | number
     creator?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

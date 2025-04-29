@@ -131,6 +131,9 @@ exports.Prisma.PhotoScalarFieldEnum = {
   id: 'id',
   eventId: 'eventId',
   url: 'url',
+  publicId: 'publicId',
+  width: 'width',
+  height: 'height',
   creator: 'creator',
   createdAt: 'createdAt'
 };
