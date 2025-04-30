@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { use } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
+import { v4 as uuidv4 } from 'uuid';
+import Image from 'next/image';
 
 export default function CapturePhotoPage({ params }) {
   const resolvedParams = use(params);
@@ -13,15 +15,45 @@ export default function CapturePhotoPage({ params }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [creator, setCreator] = useState('');
+  const [deviceId, setDeviceId] = useState('');
   const [stream, setStream] = useState(null);
   const [photoTaken, setPhotoTaken] = useState(false);
   const [photoData, setPhotoData] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [creatorNameSet, setCreatorNameSet] = useState(false);
+  const [devicePhotos, setDevicePhotos] = useState([]);
+  const [showGallery, setShowGallery] = useState(false);
+  const [fullscreenPhoto, setFullscreenPhoto] = useState(null);
   
   const videoRef = useRef();
   const canvasRef = useRef();
+  
+  // Initialize device ID on component mount
+  useEffect(() => {
+    const initializeDeviceId = async () => {
+      // Try to get existing device ID from localStorage
+      let storedDeviceId = localStorage.getItem('snapify_device_id');
+      
+      // If not found, generate a new one
+      if (!storedDeviceId) {
+        storedDeviceId = uuidv4();
+        localStorage.setItem('snapify_device_id', storedDeviceId);
+      }
+      
+      setDeviceId(storedDeviceId);
+      
+      // Also try to get previously used creator name
+      const storedCreator = localStorage.getItem('snapify_creator_name');
+      if (storedCreator) {
+        setCreator(storedCreator);
+        setCreatorNameSet(true);
+      }
+    };
+    
+    initializeDeviceId();
+  }, []);
   
   // Fetch event data
   useEffect(() => {
@@ -50,6 +82,34 @@ export default function CapturePhotoPage({ params }) {
     fetchEvent();
   }, [code]);
   
+  // Fetch photos by this device for this event
+  useEffect(() => {
+    const fetchDevicePhotos = async () => {
+      if (event && deviceId) {
+        try {
+          const response = await fetch(`/api/photos?eventId=${event.id}&deviceId=${deviceId}`);
+          
+          if (!response.ok) {
+            console.error('Failed to fetch device photos');
+            return;
+          }
+          
+          const photos = await response.json();
+          setDevicePhotos(photos);
+        } catch (error) {
+          console.error('Error fetching device photos:', error);
+        }
+      }
+    };
+    
+    fetchDevicePhotos();
+    
+    // Set up polling to refresh photos periodically
+    const intervalId = setInterval(fetchDevicePhotos, 10000); // Every 10 seconds
+    
+    return () => clearInterval(intervalId);
+  }, [event, deviceId, uploadSuccess]);
+  
   // Clean up camera stream when component unmounts
   useEffect(() => {
     return () => {
@@ -58,6 +118,16 @@ export default function CapturePhotoPage({ params }) {
       }
     };
   }, [stream]);
+  
+  const submitCreatorName = () => {
+    if (creator.trim()) {
+      localStorage.setItem('snapify_creator_name', creator);
+      setCreatorNameSet(true);
+      startCamera();
+    } else {
+      toast.error('Please enter your name');
+    }
+  };
   
   const startCamera = async () => {
     try {
@@ -87,13 +157,7 @@ export default function CapturePhotoPage({ params }) {
       setError(`Error accessing camera: ${error.message || 'Please check camera permissions'}`);
       
       // Show user-friendly error
-      toast({
-        title: "Camera Error",
-        description: `Could not access your camera. ${error.message || 'Please check permissions.'}`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      toast.error(`Could not access your camera. ${error.message || 'Please check permissions.'}`);
     }
   };
   
@@ -130,7 +194,10 @@ export default function CapturePhotoPage({ params }) {
   };
   
   const uploadPhoto = async () => {
-    if (!photoData || !creator.trim()) return;
+    if (!photoData || !creator.trim() || !deviceId) return;
+    
+    // Save creator name for future use
+    localStorage.setItem('snapify_creator_name', creator);
     
     setIsUploading(true);
     setUploadProgress(10);
@@ -148,6 +215,7 @@ export default function CapturePhotoPage({ params }) {
       formData.append('file', file);
       formData.append('eventCode', code);
       formData.append('creator', creator);
+      formData.append('deviceId', deviceId);
       
       setUploadProgress(25);
       
@@ -181,6 +249,7 @@ export default function CapturePhotoPage({ params }) {
           width: uploadResult.width,
           height: uploadResult.height,
           creator,
+          deviceId,
         }),
       });
       
@@ -196,7 +265,6 @@ export default function CapturePhotoPage({ params }) {
       setTimeout(() => {
         setPhotoTaken(false);
         setPhotoData(null);
-        setCreator('');
         setUploadProgress(0);
         setUploadSuccess(false);
         startCamera();
@@ -206,9 +274,22 @@ export default function CapturePhotoPage({ params }) {
       console.error('Error uploading photo:', error);
       setError(error.message || 'Failed to upload photo. Please try again.');
       setUploadProgress(0);
+      toast.error(error.message || 'Failed to upload photo. Please try again.');
     } finally {
       setIsUploading(false);
     }
+  };
+  
+  const toggleGallery = () => {
+    setShowGallery(!showGallery);
+  };
+  
+  const viewPhoto = (photo) => {
+    setFullscreenPhoto(photo);
+  };
+  
+  const closePhotoView = () => {
+    setFullscreenPhoto(null);
   };
   
   if (isLoading) {
@@ -271,15 +352,131 @@ export default function CapturePhotoPage({ params }) {
     );
   }
   
+  // Creator name input view
+  if (!creatorNameSet) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex justify-center items-center p-4">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+          <h1 className="text-2xl font-bold text-white mb-4 text-center">{event.title}</h1>
+          <p className="text-white mb-6 text-center">Please enter your name to continue</p>
+          
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="creator" className="block text-sm font-medium text-white mb-1">
+                Your Name
+              </label>
+              <input
+                type="text"
+                id="creator"
+                value={creator}
+                onChange={(e) => setCreator(e.target.value)}
+                required
+                className="w-full p-2 border rounded-md bg-gray-800 text-white border-gray-600"
+                placeholder="Enter your name"
+              />
+            </div>
+            
+            <button
+              onClick={submitCreatorName}
+              disabled={!creator.trim()}
+              className="w-full px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-blue-800 disabled:opacity-50"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Fullscreen photo view
+  if (fullscreenPhoto) {
+    return (
+      <div className="fixed inset-0 bg-black z-50 flex flex-col">
+        <div className="p-4 flex justify-between items-center">
+          <button onClick={closePhotoView} className="text-white">
+            &larr; Back
+          </button>
+          <div className="text-white">
+            <span>{fullscreenPhoto.creator}</span>
+          </div>
+        </div>
+        
+        <div className="flex-1 flex items-center justify-center">
+          <img 
+            src={fullscreenPhoto.url} 
+            alt={`Photo by ${fullscreenPhoto.creator}`}
+            className="max-h-full max-w-full object-contain"
+          />
+        </div>
+      </div>
+    );
+  }
+  
+  // Gallery view
+  if (showGallery) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex flex-col">
+        {/* Header */}
+        <div className="bg-gray-800 p-4 text-white">
+          <div className="max-w-lg mx-auto flex justify-between items-center">
+            <h1 className="text-xl font-bold">{event.title}</h1>
+            <div className="flex gap-2">
+              <button onClick={toggleGallery} className="text-sm text-blue-400">
+                Back to Camera
+              </button>
+              <Link href={`/events/${code}`} className="text-sm text-blue-400">
+                Event Gallery
+              </Link>
+            </div>
+          </div>
+        </div>
+        
+        {/* Gallery content */}
+        <div className="flex-1 p-4 max-w-lg mx-auto w-full">
+          <h2 className="text-xl font-semibold text-white mb-4">Your Photos ({devicePhotos.length})</h2>
+          
+          {devicePhotos.length === 0 ? (
+            <div className="text-center text-white p-8">
+              <p>You haven't taken any photos yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {devicePhotos.map((photo) => (
+                <div 
+                  key={photo.id} 
+                  className="aspect-square relative overflow-hidden rounded-lg cursor-pointer"
+                  onClick={() => viewPhoto(photo)}
+                >
+                  <img 
+                    src={photo.url} 
+                    alt={`Photo by ${photo.creator}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+  
+  // Camera view
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
       {/* Header */}
       <div className="bg-gray-800 p-4 text-white">
         <div className="max-w-lg mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">{event.title}</h1>
-          <Link href={`/events/${code}`} className="text-sm text-blue-400">
-            View Gallery
-          </Link>
+          <div className="flex gap-2">
+            <button onClick={toggleGallery} className="text-sm text-blue-400">
+              Your Photos ({devicePhotos.length})
+            </button>
+            <Link href={`/events/${code}`} className="text-sm text-blue-400">
+              Event Gallery
+            </Link>
+          </div>
         </div>
       </div>
       
@@ -317,6 +514,36 @@ export default function CapturePhotoPage({ params }) {
                 <div className="w-14 h-14 rounded-full border-4 border-gray-800"></div>
               </button>
             )}
+            
+            {/* Device photos mini gallery */}
+            {devicePhotos.length > 0 && (
+              <div className="mt-4">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-white text-sm font-medium">Your recent photos</h3>
+                  <button 
+                    onClick={toggleGallery}
+                    className="text-xs text-blue-400"
+                  >
+                    View all
+                  </button>
+                </div>
+                <div className="flex overflow-x-auto gap-2 pb-2">
+                  {devicePhotos.slice(0, 5).map((photo) => (
+                    <div 
+                      key={photo.id} 
+                      className="h-20 w-20 flex-shrink-0 relative rounded-lg overflow-hidden"
+                      onClick={() => viewPhoto(photo)}
+                    >
+                      <img 
+                        src={photo.url} 
+                        alt={`Photo by ${photo.creator}`} 
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <>
@@ -331,21 +558,6 @@ export default function CapturePhotoPage({ params }) {
             
             {!isUploading && !uploadSuccess && (
               <div className="space-y-4">
-                <div>
-                  <label htmlFor="creator" className="block text-sm font-medium text-white mb-1">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    id="creator"
-                    value={creator}
-                    onChange={(e) => setCreator(e.target.value)}
-                    required
-                    className="w-full p-2 border rounded-md bg-gray-800 text-white border-gray-600"
-                    placeholder="Enter your name"
-                  />
-                </div>
-                
                 <div className="flex space-x-2">
                   <button
                     onClick={retakePhoto}
@@ -355,8 +567,7 @@ export default function CapturePhotoPage({ params }) {
                   </button>
                   <button
                     onClick={uploadPhoto}
-                    disabled={!creator.trim()}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-blue-800 disabled:opacity-50"
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md"
                   >
                     Upload
                   </button>

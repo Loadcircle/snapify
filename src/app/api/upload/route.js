@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { uploadImage } from '@/lib/utils/cloudinary';
 import { getEventByCode } from '@/lib/services/eventService';
+import { countPhotosByDeviceInEvent } from '@/lib/services/photoService';
 
 // POST /api/upload
 // Handles direct upload to Cloudinary
@@ -11,6 +12,7 @@ export async function POST(request) {
     const file = data.get('file');
     const eventCode = data.get('eventCode');
     const creator = data.get('creator');
+    const deviceId = data.get('deviceId');
     
     // Validate required fields
     if (!file || !eventCode || !creator) {
@@ -40,6 +42,20 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Event has expired' }, { status: 400 });
     }
     
+    // If deviceId is provided, check if the device has reached its limit
+    if (deviceId) {
+      // For now, hard-code a limit of 10 photos per device
+      const devicePhotoCount = await countPhotosByDeviceInEvent(event.id, deviceId);
+      const maxPhotosPerDevice = 10; // This could be a setting in the event
+      
+      if (devicePhotoCount >= maxPhotosPerDevice) {
+        return NextResponse.json(
+          { error: 'You have reached the maximum number of photos for this event' }, 
+          { status: 400 }
+        );
+      }
+    }
+    
     // Convert the file to base64
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -57,6 +73,7 @@ export async function POST(request) {
       width: uploadResult.width,
       height: uploadResult.height,
       creator,
+      deviceId,
     });
   } catch (error) {
     console.error('Error handling upload:', error);

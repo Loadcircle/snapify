@@ -54,6 +54,37 @@ export async function getPhotosByEventId(eventId) {
 }
 
 /**
+ * Count photos from a specific device in an event
+ * @param {string} eventId - The event ID
+ * @param {string} deviceId - The device ID
+ * @returns {Promise<number>} The count of photos
+ */
+export async function countPhotosByDeviceInEvent(eventId, deviceId) {
+  return prisma.photo.count({
+    where: {
+      eventId,
+      deviceId,
+    },
+  });
+}
+
+/**
+ * Get photos from a specific device in an event
+ * @param {string} eventId - The event ID
+ * @param {string} deviceId - The device ID
+ * @returns {Promise<Array>} The photos from this device
+ */
+export async function getPhotosByDeviceInEvent(eventId, deviceId) {
+  return prisma.photo.findMany({
+    where: {
+      eventId,
+      deviceId,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
+/**
  * Delete a photo
  * @param {string} id - The photo ID
  * @returns {Promise<Object>} The deleted photo

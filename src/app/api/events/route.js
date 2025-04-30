@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createEvent, getEventById } from '@/lib/services/eventService';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 // GET /api/events/:id
 export async function GET(request) {
@@ -27,6 +29,13 @@ export async function GET(request) {
 // POST /api/events
 export async function POST(request) {
   try {
+    // Get the authenticated user
+    const session = await getServerSession(authOptions);
+    
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
     const body = await request.json();
     
     // Validate required fields
@@ -37,7 +46,13 @@ export async function POST(request) {
       );
     }
     
-    const event = await createEvent(body);
+    // Add the user ID to connect the event to the creator
+    const eventData = {
+      ...body,
+      createdById: session.user.id
+    };
+    
+    const event = await createEvent(eventData);
     return NextResponse.json(event, { status: 201 });
   } catch (error) {
     console.error('Error creating event:', error);

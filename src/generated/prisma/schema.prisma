@@ -16,10 +16,10 @@ datasource db {
 
 model Event {
   id         String   @id @default(cuid())
-  title      String // nombre personalizado del evento
+  title      String // custom event name
   code       String   @unique
   maxPhotos  Int
-  usedPhotos Int      @default(0) // contador de fotos subidas
+  usedPhotos Int      @default(0) // counter of uploaded photos
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   photos     Photo[]
@@ -29,7 +29,11 @@ model Photo {
   id        String   @id @default(cuid())
   eventId   String
   event     Event    @relation(fields: [eventId], references: [id])
-  url       String // url en GCP storage
-  creator   String // nombre del creador de la foto
+  url       String // URL in Cloudinary
+  publicId  String // Cloudinary public ID for reference and deletion
+  width     Int      @default(0) // Image width
+  height    Int      @default(0) // Image height
+  creator   String // name of the photo creator
+  deviceId  String? // ID of the device that uploaded the photo
   createdAt DateTime @default(now())
 }

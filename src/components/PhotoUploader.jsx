@@ -1,14 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import UserNameForm from './UserNameForm';
+import { getDeviceId, getUserName, saveUserName } from '@/lib/utils/deviceId';
 
-export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded }) {
+export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded, isAdminView = false }) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
-  const [creator, setCreator] = useState('');
+  const [creator, setCreator] = useState(isAdminView ? 'Admin Upload' : '');
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [deviceId, setDeviceId] = useState('');
+  const [hasSetName, setHasSetName] = useState(isAdminView ? true : false);
+  
+  // Load the device ID and user name on component mount
+  useEffect(() => {
+    // For admin view, use a fixed deviceId
+    if (isAdminView) {
+      setDeviceId('admin-device');
+      return;
+    }
+    
+    const storedName = getUserName();
+    const deviceId = getDeviceId();
+    
+    setDeviceId(deviceId);
+    
+    if (storedName) {
+      setCreator(storedName);
+      setHasSetName(true);
+    }
+  }, [isAdminView]);
+  
+  const handleSaveName = (name) => {
+    setCreator(name);
+    saveUserName(name);
+    setHasSetName(true);
+  };
   
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -44,7 +73,7 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded }) {
       return;
     }
     
-    if (!creator.trim()) {
+    if (!creator.trim() && !isAdminView) {
       setError('Please enter your name');
       return;
     }
@@ -59,6 +88,7 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded }) {
       formData.append('file', selectedFile);
       formData.append('eventCode', eventCode);
       formData.append('creator', creator);
+      formData.append('deviceId', deviceId);
       
       setUploadProgress(25);
       
@@ -92,6 +122,7 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded }) {
           width: uploadResult.width,
           height: uploadResult.height,
           creator,
+          deviceId,
         }),
       });
       
@@ -103,10 +134,9 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded }) {
       const photo = await response.json();
       setUploadProgress(100);
       
-      // Reset form
+      // Reset form but keep the creator name
       setSelectedFile(null);
       setPreview('');
-      setCreator('');
       setUploadProgress(0);
       
       // Notify parent component
@@ -123,6 +153,26 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded }) {
     }
   };
   
+  // If the user hasn't set their name yet and this is not admin view, show only the name form
+  if (!hasSetName && !isAdminView) {
+    return (
+      <div className="space-y-6">
+        {error && (
+          <div className="bg-red-50 p-4 rounded-md text-red-500">
+            {error}
+          </div>
+        )}
+        
+        <div className="text-center mb-4">
+          <h3 className="text-lg font-medium">Before you start</h3>
+          <p className="text-sm text-gray-500">Please tell us your name first</p>
+        </div>
+        
+        <UserNameForm initialName={creator} onSave={handleSaveName} />
+      </div>
+    );
+  }
+  
   return (
     <div className="space-y-6">
       {error && (
@@ -131,23 +181,12 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded }) {
         </div>
       )}
       
+      {/* Only show the name form in non-admin mode */}
+      {!isAdminView && (
+        <UserNameForm initialName={creator} onSave={handleSaveName} />
+      )}
+      
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="creator" className="block text-sm font-medium mb-1">
-            Your Name
-          </label>
-          <input
-            type="text"
-            id="creator"
-            value={creator}
-            onChange={(e) => setCreator(e.target.value)}
-            required
-            disabled={isUploading}
-            className="w-full p-2 border rounded-md"
-            placeholder="Enter your name"
-          />
-        </div>
-        
         <div>
           <label htmlFor="photo" className="block text-sm font-medium mb-1">
             Select Photo
@@ -192,7 +231,7 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded }) {
         
         <button
           type="submit"
-          disabled={isUploading || !selectedFile || !creator.trim()}
+          disabled={isUploading || !selectedFile}
           className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
         >
           {isUploading ? 'Uploading...' : 'Upload Photo'}

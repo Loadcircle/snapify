@@ -1,4 +1,4 @@
-import { PrismaClient } from '../generated/prisma';
+import { PrismaClient } from '@/generated/prisma/index';
 
 // Add prisma to the NodeJS global type
 const globalForPrisma = global;

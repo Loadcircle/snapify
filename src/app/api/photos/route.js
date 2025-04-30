@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
-import { createPhoto, getPhotoById, getPhotosByEventId } from '@/lib/services/photoService';
+import { createPhoto, getPhotoById, getPhotosByEventId, countPhotosByDeviceInEvent, getPhotosByDeviceInEvent } from '@/lib/services/photoService';
 import { getEventById } from '@/lib/services/eventService';
 
-// GET /api/photos?id=123 or /api/photos?eventId=456
+// GET /api/photos?id=123 or /api/photos?eventId=456 or /api/photos?eventId=456&deviceId=789
 export async function GET(request) {
   try {
     const url = new URL(request.url);
     const id = url.searchParams.get('id');
     const eventId = url.searchParams.get('eventId');
+    const deviceId = url.searchParams.get('deviceId');
     
     // If id is provided, get single photo
     if (id) {
@@ -20,7 +21,13 @@ export async function GET(request) {
       return NextResponse.json(photo);
     }
     
-    // If eventId is provided, get all photos for event
+    // If eventId and deviceId are provided, get photos by device for event
+    if (eventId && deviceId) {
+      const photos = await getPhotosByDeviceInEvent(eventId, deviceId);
+      return NextResponse.json(photos);
+    }
+    
+    // If only eventId is provided, get all photos for event
     if (eventId) {
       const photos = await getPhotosByEventId(eventId);
       return NextResponse.json(photos);
@@ -67,6 +74,20 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Event has expired' }, { status: 400 });
     }
     
+    // If deviceId is provided, check if the device has reached its limit
+    if (body.deviceId) {
+      // For now, hard-code a limit of 10 photos per device
+      const devicePhotoCount = await countPhotosByDeviceInEvent(body.eventId, body.deviceId);
+      const maxPhotosPerDevice = 10; // This could be a setting in the event
+      
+      if (devicePhotoCount >= maxPhotosPerDevice) {
+        return NextResponse.json(
+          { error: 'You have reached the maximum number of photos for this event' }, 
+          { status: 400 }
+        );
+      }
+    }
+    
     const photo = await createPhoto({
       eventId: body.eventId,
       url: body.url,
@@ -74,6 +95,7 @@ export async function POST(request) {
       width: body.width || 0,
       height: body.height || 0,
       creator: body.creator,
+      deviceId: body.deviceId || null,
     });
     
     return NextResponse.json(photo, { status: 201 });
