@@ -7,6 +7,15 @@ import { toast } from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import Image from 'next/image';
 
+// Define filter presets
+const FILTERS = {
+  none: { name: 'Normal', css: '' },
+  sepia: { name: 'Vintage', css: 'sepia(0.7)' },
+  grayscale: { name: 'B&W', css: 'grayscale(1)' },
+  contrast: { name: 'Vivid', css: 'contrast(1.5) saturate(1.5)' },
+  warm: { name: 'Warm', css: 'sepia(0.3) saturate(1.6) hue-rotate(-15deg)' },
+};
+
 export default function CapturePhotoPage({ params }) {
   const resolvedParams = use(params);
   const code = resolvedParams.code;
@@ -26,6 +35,7 @@ export default function CapturePhotoPage({ params }) {
   const [devicePhotos, setDevicePhotos] = useState([]);
   const [showGallery, setShowGallery] = useState(false);
   const [fullscreenPhoto, setFullscreenPhoto] = useState(null);
+  const [currentFilter, setCurrentFilter] = useState('none');
   
   const videoRef = useRef();
   const canvasRef = useRef();
@@ -173,7 +183,24 @@ export default function CapturePhotoPage({ params }) {
     
     // Draw the current video frame to the canvas
     const ctx = canvas.getContext('2d');
+    
+    // First draw the video frame
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Apply the selected filter to the canvas if not "none"
+    if (currentFilter !== 'none') {
+      // Save the current canvas state
+      ctx.save();
+      
+      // Apply the filter using CSS-like filters via canvas filter
+      ctx.filter = FILTERS[currentFilter].css;
+      
+      // Draw the filtered version
+      ctx.drawImage(canvas, 0, 0);
+      
+      // Restore the canvas state
+      ctx.restore();
+    }
     
     // Get the image data as base64
     const imageData = canvas.toDataURL('image/jpeg', 0.9);
@@ -191,6 +218,10 @@ export default function CapturePhotoPage({ params }) {
     setPhotoTaken(false);
     setPhotoData(null);
     startCamera();
+  };
+  
+  const changeFilter = (filterId) => {
+    setCurrentFilter(filterId);
   };
   
   const uploadPhoto = async () => {
@@ -502,8 +533,30 @@ export default function CapturePhotoPage({ params }) {
                 autoPlay
                 playsInline
                 className={`w-full h-full object-cover ${stream ? 'block' : 'hidden'}`}
+                style={{ filter: FILTERS[currentFilter].css }}
               />
             </div>
+            
+            {/* Filter selection */}
+            {stream && (
+              <div className="mb-4">
+                <div className="flex justify-center space-x-2 overflow-x-auto py-2">
+                  {Object.entries(FILTERS).map(([id, filter]) => (
+                    <button
+                      key={id}
+                      onClick={() => changeFilter(id)}
+                      className={`px-3 py-1 rounded-full text-xs ${
+                        currentFilter === id
+                          ? 'bg-orange-500 text-white'
+                          : 'bg-gray-700 text-white'
+                      }`}
+                    >
+                      {filter.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             
             {/* Camera controls */}
             {stream && (
