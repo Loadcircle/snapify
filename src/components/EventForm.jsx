@@ -3,14 +3,18 @@
 import { useState } from 'react';
 import { generateEventCode } from '@/lib/utils/codeGenerator';
 
+// Define los mismos filtros que en la página de captura
+const FILTERS = {
+  none: { name: 'Normal', css: '' },
+  sepia: { name: 'Vintage', css: 'sepia(0.7)' },
+  grayscale: { name: 'B&W', css: 'grayscale(1)' },
+  contrast: { name: 'Vivid', css: 'contrast(1.5) saturate(1.5)' },
+  warm: { name: 'Warm', css: 'sepia(0.3) saturate(1.6) hue-rotate(-15deg)' },
+};
+
 export default function EventForm({ onSubmit, initialData = {} }) {
   const [formData, setFormData] = useState({
-    title: initialData.title || '',
-    code: initialData.code || generateEventCode(),
     maxPhotos: initialData.maxPhotos || 50,
-    expiresAt: initialData.expiresAt ? 
-      new Date(initialData.expiresAt).toISOString().split('T')[0] : 
-      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Default 7 days from now
   });
   
   const [error, setError] = useState('');
@@ -30,14 +34,16 @@ export default function EventForm({ onSubmit, initialData = {} }) {
     setIsSubmitting(true);
     
     try {
-      // Convert expiresAt to an ISO string with time at the end of the day
-      const expiresAt = new Date(formData.expiresAt);
-      expiresAt.setHours(23, 59, 59, 999);
-      
-      await onSubmit({
+      // Generate other required fields automatically
+      const eventData = {
         ...formData,
-        expiresAt: expiresAt.toISOString()
-      });
+        title: 'Mi Evento', // Default title
+        code: generateEventCode(), // Auto-generate code
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // Default 7 days from now
+        allowedFilters: 'none', // Default filter option
+      };
+      
+      await onSubmit(eventData);
     } catch (error) {
       console.error('Error submitting form:', error);
       setError('Failed to save event. Please try again.');
@@ -46,10 +52,19 @@ export default function EventForm({ onSubmit, initialData = {} }) {
     }
   };
   
-  const generateNewCode = () => {
+  // Handle filter selection - can select multiple filters or just one
+  const handleFilterChange = (e) => {
+    const { value, options } = e.target;
+    
+    // Get all selected options
+    const selectedFilters = Array.from(options)
+      .filter(option => option.selected)
+      .map(option => option.value);
+    
+    // Join with commas to store as string
     setFormData(prev => ({
       ...prev,
-      code: generateEventCode()
+      allowedFilters: selectedFilters.join(',')
     }));
   };
   
@@ -60,45 +75,6 @@ export default function EventForm({ onSubmit, initialData = {} }) {
           {error}
         </div>
       )}
-      
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium mb-1">
-          Event Title
-        </label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded-md"
-        />
-      </div>
-      
-      <div>
-        <label htmlFor="code" className="block text-sm font-medium mb-1">
-          Event Code
-        </label>
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            id="code"
-            name="code"
-            value={formData.code}
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded-md"
-          />
-          <button
-            type="button"
-            onClick={generateNewCode}
-            className="px-4 py-2 bg-gray-200 rounded-md"
-          >
-            Generate
-          </button>
-        </div>
-      </div>
       
       <div>
         <label htmlFor="maxPhotos" className="block text-sm font-medium mb-1">
@@ -114,21 +90,9 @@ export default function EventForm({ onSubmit, initialData = {} }) {
           min="1"
           className="w-full p-2 border rounded-md"
         />
-      </div>
-      
-      <div>
-        <label htmlFor="expiresAt" className="block text-sm font-medium mb-1">
-          Expiration Date
-        </label>
-        <input
-          type="date"
-          id="expiresAt"
-          name="expiresAt"
-          value={formData.expiresAt}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded-md"
-        />
+        <p className="text-xs text-gray-500 mt-1">
+          Choose how many photos can be uploaded to this event
+        </p>
       </div>
       
       <button
@@ -136,7 +100,7 @@ export default function EventForm({ onSubmit, initialData = {} }) {
         disabled={isSubmitting}
         className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
       >
-        {isSubmitting ? 'Saving...' : initialData.id ? 'Update Event' : 'Create Event'}
+        {isSubmitting ? 'Creating...' : 'Create Event'}
       </button>
     </form>
   );

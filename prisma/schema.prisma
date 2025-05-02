@@ -67,16 +67,17 @@ model VerificationToken {
 
 // Application Models
 model Event {
-  id           String   @id @default(cuid())
-  title        String   // custom event name
-  code         String   @unique
-  maxPhotos    Int
-  usedPhotos   Int      @default(0) // counter of uploaded photos
-  expiresAt    DateTime
-  createdAt    DateTime @default(now())
-  photos       Photo[]
-  createdBy    User?    @relation(fields: [createdById], references: [id])
-  createdById  String?
+  id             String   @id @default(cuid())
+  title          String   // custom event name
+  code           String   @unique
+  maxPhotos      Int
+  usedPhotos     Int      @default(0) // counter of uploaded photos
+  allowedFilters String?  // comma-separated list of allowed filter IDs
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+  photos         Photo[]
+  createdBy      User?    @relation(fields: [createdById], references: [id])
+  createdById    String?
 }
 
 model Photo {

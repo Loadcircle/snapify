@@ -36,6 +36,7 @@ export default function CapturePhotoPage({ params }) {
   const [showGallery, setShowGallery] = useState(false);
   const [fullscreenPhoto, setFullscreenPhoto] = useState(null);
   const [currentFilter, setCurrentFilter] = useState('none');
+  const [allowedFilters, setAllowedFilters] = useState(['none']);
   
   const videoRef = useRef();
   const canvasRef = useRef();
@@ -81,6 +82,17 @@ export default function CapturePhotoPage({ params }) {
         
         const data = await response.json();
         setEvent(data);
+        
+        // Set allowed filters based on event configuration
+        if (data.allowedFilters) {
+          const filterIds = data.allowedFilters.split(',');
+          setAllowedFilters(filterIds);
+          
+          // If only one filter is allowed, automatically set it as current
+          if (filterIds.length === 1) {
+            setCurrentFilter(filterIds[0]);
+          }
+        }
       } catch (error) {
         console.error('Error fetching event:', error);
         setError(error.message || 'Failed to load event. Please try again.');
@@ -537,24 +549,33 @@ export default function CapturePhotoPage({ params }) {
               />
             </div>
             
-            {/* Filter selection */}
-            {stream && (
+            {/* Filter selection - only show if allowed filters has more than 1 option */}
+            {stream && allowedFilters.length > 1 && (
               <div className="mb-4">
                 <div className="flex justify-center space-x-2 overflow-x-auto py-2">
-                  {Object.entries(FILTERS).map(([id, filter]) => (
+                  {allowedFilters.map((filterId) => (
                     <button
-                      key={id}
-                      onClick={() => changeFilter(id)}
+                      key={filterId}
+                      onClick={() => changeFilter(filterId)}
                       className={`px-3 py-1 rounded-full text-xs ${
-                        currentFilter === id
+                        currentFilter === filterId
                           ? 'bg-orange-500 text-white'
                           : 'bg-gray-700 text-white'
                       }`}
                     >
-                      {filter.name}
+                      {FILTERS[filterId].name}
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+            
+            {/* Selected filter indicator when only one is allowed */}
+            {stream && allowedFilters.length === 1 && allowedFilters[0] !== 'none' && (
+              <div className="text-center text-white text-sm mb-4">
+                <span className="px-2 py-1 bg-gray-800 rounded-md inline-block">
+                  Filter: {FILTERS[allowedFilters[0]].name}
+                </span>
               </div>
             )}
             

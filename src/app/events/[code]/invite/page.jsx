@@ -71,6 +71,7 @@ export default function InvitePage({ params }) {
 
   // Create QR code URL - direct to the capture page
   const captureUrl = `${baseUrl}/events/${code}/capture`;
+  const galleryUrl = `${baseUrl}/events/${code}/gallery`;
 
   // Format date for display
   const expiresDate = new Date(event.expiresAt).toLocaleDateString('en-US', {
@@ -122,6 +123,13 @@ export default function InvitePage({ params }) {
               </div>
               
               <div>
+                <h2 className="text-xl font-semibold text-gray-700">Gallery URL</h2>
+                <a href={galleryUrl} className="text-blue-500 underline break-all" target="_blank" rel="noopener noreferrer">
+                  {galleryUrl}
+                </a>
+              </div>
+              
+              <div>
                 <h2 className="text-xl font-semibold text-gray-700">Expires on</h2>
                 <p className="text-gray-600">{expiresDate}</p>
               </div>
@@ -129,12 +137,19 @@ export default function InvitePage({ params }) {
           </div>
         </div>
         
-        <div className="bg-blue-600 p-6 text-center">
+        <div className="bg-blue-600 p-6 text-center flex">
           <Link 
             href={captureUrl}
-            className="inline-block text-white font-medium hover:underline"
+            className="flex-1 inline-block text-white font-medium hover:underline"
           >
-            Take Photos Now
+            Take Photos
+          </Link>
+          <span className="text-blue-300 px-2">|</span>
+          <Link 
+            href={galleryUrl}
+            className="flex-1 inline-block text-white font-medium hover:underline"
+          >
+            View Gallery
           </Link>
         </div>
       </div>
