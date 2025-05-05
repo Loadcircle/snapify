@@ -62,8 +62,8 @@ export default function SignUp() {
       if (signInResult.error) {
         setError(signInResult.error);
       } else {
-        // Redirect to home page after successful login
-        router.push('/');
+        // Redirect to dashboard page after successful login
+        router.push('/dashboard');
         router.refresh();
       }
     } catch (error) {
@@ -75,7 +75,7 @@ export default function SignUp() {
   };
 
   const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/' });
+    signIn('google', { callbackUrl: '/dashboard' });
   };
 
   return (

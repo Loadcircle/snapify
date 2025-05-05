@@ -201,29 +201,177 @@ export default function CapturePhotoPage({ params }) {
     
     // Apply the selected filter to the canvas if not "none"
     if (currentFilter !== 'none') {
-      // Save the current canvas state
-      ctx.save();
+      // iOS Safari doesn't support canvas filter property well
+      // Create a temporary image element to apply the filter for iOS compatibility
+      const tempImg = document.createElement('img');
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
       
-      // Apply the filter using CSS-like filters via canvas filter
-      ctx.filter = FILTERS[currentFilter].css;
+      // Set dimensions of temp canvas
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
       
-      // Draw the filtered version
-      ctx.drawImage(canvas, 0, 0);
+      // Get the data URL from the original canvas
+      const originalDataURL = canvas.toDataURL('image/jpeg', 1.0);
       
-      // Restore the canvas state
-      ctx.restore();
+      // Apply filter manually with a temp image and temp canvas
+      tempImg.onload = () => {
+        // Draw the original image to the temp canvas
+        tempCtx.drawImage(tempImg, 0, 0, tempCanvas.width, tempCanvas.height);
+        
+        // Apply filter manually based on the selected filter
+        const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        const pixels = imageData.data;
+        
+        // Apply the filter manually to the pixel data
+        switch(currentFilter) {
+          case 'sepia':
+            applySepia(pixels);
+            break;
+          case 'grayscale':
+            applyGrayscale(pixels);
+            break;
+          case 'contrast':
+            applyContrast(pixels);
+            break;
+          case 'warm':
+            applyWarm(pixels);
+            break;
+        }
+        
+        // Put the modified pixel data back to the temp canvas
+        tempCtx.putImageData(imageData, 0, 0);
+        
+        // Get the filtered image data URL
+        const filteredDataURL = tempCanvas.toDataURL('image/jpeg', 0.9);
+        
+        // Set the filtered image as the photo data
+        setPhotoData(filteredDataURL);
+        setPhotoTaken(true);
+        
+        // Stop the camera stream
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+          setStream(null);
+        }
+      };
+      
+      // Set the source of the temp image to trigger onload
+      tempImg.src = originalDataURL;
+    } else {
+      // No filter, use original canvas data
+      const imageData = canvas.toDataURL('image/jpeg', 0.9);
+      setPhotoData(imageData);
+      setPhotoTaken(true);
+      
+      // Stop the camera stream
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        setStream(null);
+      }
     }
-    
-    // Get the image data as base64
-    const imageData = canvas.toDataURL('image/jpeg', 0.9);
-    setPhotoData(imageData);
-    setPhotoTaken(true);
-    
-    // Stop the camera stream
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
+  };
+  
+  // Filter functions for manually applying filters
+  const applySepia = (pixels) => {
+    for (let i = 0; i < pixels.length; i += 4) {
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+      
+      pixels[i] = Math.min(255, (r * 0.393) + (g * 0.769) + (b * 0.189));
+      pixels[i + 1] = Math.min(255, (r * 0.349) + (g * 0.686) + (b * 0.168));
+      pixels[i + 2] = Math.min(255, (r * 0.272) + (g * 0.534) + (b * 0.131));
     }
+  };
+  
+  const applyGrayscale = (pixels) => {
+    for (let i = 0; i < pixels.length; i += 4) {
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+      
+      // Standard grayscale conversion
+      const gray = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      
+      pixels[i] = gray;
+      pixels[i + 1] = gray;
+      pixels[i + 2] = gray;
+    }
+  };
+  
+  const applyContrast = (pixels) => {
+    const factor = 1.5; // Contrast factor
+    const saturationFactor = 1.5; // Saturation factor
+    
+    for (let i = 0; i < pixels.length; i += 4) {
+      // Apply contrast
+      pixels[i] = Math.min(255, ((pixels[i] - 128) * factor) + 128);
+      pixels[i + 1] = Math.min(255, ((pixels[i + 1] - 128) * factor) + 128);
+      pixels[i + 2] = Math.min(255, ((pixels[i + 2] - 128) * factor) + 128);
+      
+      // Apply saturation (using simple RGB to HSL and back conversion)
+      const r = pixels[i] / 255;
+      const g = pixels[i + 1] / 255;
+      const b = pixels[i + 2] / 255;
+      
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+      
+      if (max === min) {
+        h = s = 0; // achromatic
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        
+        h /= 6;
+      }
+      
+      // Increase saturation
+      s = Math.min(1, s * saturationFactor);
+      
+      // Convert back to RGB
+      if (s === 0) {
+        pixels[i] = pixels[i + 1] = pixels[i + 2] = l * 255;
+      } else {
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        
+        pixels[i] = hue2rgb(p, q, h + 1/3) * 255;
+        pixels[i + 1] = hue2rgb(p, q, h) * 255;
+        pixels[i + 2] = hue2rgb(p, q, h - 1/3) * 255;
+      }
+    }
+  };
+  
+  const applyWarm = (pixels) => {
+    for (let i = 0; i < pixels.length; i += 4) {
+      // Apply sepia with a lower intensity
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+      
+      pixels[i] = Math.min(255, (r * 0.9) + (g * 0.1) + (b * 0.1));  // Increase red
+      pixels[i + 1] = Math.min(255, (r * 0.1) + (g * 0.9) + (b * 0.1));  // Keep green
+      pixels[i + 2] = Math.min(255, (r * 0.1) + (g * 0.2) + (b * 0.7));  // Reduce blue slightly
+    }
+  };
+  
+  // Helper function for HSL to RGB conversion
+  const hue2rgb = (p, q, t) => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
   };
   
   const retakePhoto = () => {

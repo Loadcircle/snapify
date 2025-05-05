@@ -27,7 +27,7 @@ export default function SignIn() {
       if (result.error) {
         setError(result.error);
       } else {
-        router.push('/');  // Redirect to home page after successful login
+        router.push('/dashboard');  // Redirect to dashboard page after successful login
         router.refresh();
       }
     } catch (error) {
@@ -39,7 +39,7 @@ export default function SignIn() {
   };
 
   const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/' });
+    signIn('google', { callbackUrl: '/dashboard' });
   };
 
   return (

@@ -17,6 +17,11 @@ export async function middleware(request) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
+  // Redirect unauthenticated users trying to create an event to the signup page
+  if (!isAuth && pathname === '/events/create') {
+    return NextResponse.redirect(new URL('/auth/signup', request.url));
+  }
+
   // Check for /events/[code] that doesn't include /capture or /invite
   if (
     pathname.match(/^\/events\/[^/]+$/) && 
@@ -39,6 +44,8 @@ export const config = {
     // Protected routes that require authentication
     '/admin/:path*',
     // Event admin pages (will check if authenticated)
-    '/events/:code'
+    '/events/:code',
+    // Event creation page
+    '/events/create'
   ],
 }; 

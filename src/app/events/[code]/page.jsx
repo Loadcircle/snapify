@@ -165,7 +165,7 @@ export default function EventPage({ params }) {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-md mx-auto">
           <div className="mb-6">
-            <Link href="/" className="text-blue-600 hover:underline">
+            <Link href="/dashboard" className="text-blue-600 hover:underline">
               &larr; Back to Home
             </Link>
           </div>
@@ -192,13 +192,14 @@ export default function EventPage({ params }) {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-6 flex justify-between items-center">
-        <Link href="/" className="text-blue-600 hover:underline">
+        <Link href="/dashboard" className="text-blue-600 hover:underline">
           &larr; Back to Home
         </Link>
         
         <div className="flex gap-3">
           <Link 
             href={`/events/${code}/gallery`}
+            target='_blank'
             className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 flex items-center"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
