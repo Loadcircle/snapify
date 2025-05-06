@@ -546,33 +546,28 @@ export default function CapturePhotoPage({ params }) {
   // Creator name input view
   if (!creatorNameSet) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center p-4">
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
-          <h1 className="text-2xl font-bold text-white mb-4 text-center">{event.title}</h1>
-          <p className="text-white mb-6 text-center">Please enter your name to continue</p>
+      <div className="min-h-screen bg-black flex justify-center items-center p-4">
+        <div className="p-6 rounded-lg max-w-md w-full bg-black">
+          <h1 className="text-xl font-bold text-white mb-4 text-center">{event.title}</h1>
+          <p className="text-white mb-6 text-center">What's your name?</p>
           
           <div className="space-y-4">
-            <div>
-              <label htmlFor="creator" className="block text-sm font-medium text-white mb-1">
-                Your Name
-              </label>
-              <input
-                type="text"
-                id="creator"
-                value={creator}
-                onChange={(e) => setCreator(e.target.value)}
-                required
-                className="w-full p-2 border rounded-md bg-gray-800 text-white border-gray-600"
-                placeholder="Enter your name"
-              />
-            </div>
+            <input
+              type="text"
+              id="creator"
+              value={creator}
+              onChange={(e) => setCreator(e.target.value)}
+              required
+              className="w-full p-3 border rounded-lg bg-gray-900 text-white border-gray-700"
+              placeholder="Enter your name"
+            />
             
             <button
               onClick={submitCreatorName}
               disabled={!creator.trim()}
-              className="w-full px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-blue-800 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg disabled:bg-blue-800 disabled:opacity-50"
             >
-              Continue
+              Continue to Camera
             </button>
           </div>
         </div>
@@ -584,13 +579,16 @@ export default function CapturePhotoPage({ params }) {
   if (fullscreenPhoto) {
     return (
       <div className="fixed inset-0 bg-black z-50 flex flex-col">
-        <div className="p-4 flex justify-between items-center">
-          <button onClick={closePhotoView} className="text-white">
-            &larr; Back
+        <div className="absolute top-0 left-0 right-0 p-3 flex justify-between items-center bg-gradient-to-b from-black/70 to-transparent">
+          <button onClick={closePhotoView} className="text-white p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
-          <div className="text-white">
+          <div className="text-white text-sm">
             <span>{fullscreenPhoto.creator}</span>
           </div>
+          <div className="w-10"></div> {/* Empty div for flex alignment */}
         </div>
         
         <div className="flex-1 flex items-center justify-center">
@@ -607,36 +605,37 @@ export default function CapturePhotoPage({ params }) {
   // Gallery view
   if (showGallery) {
     return (
-      <div className="min-h-screen bg-gray-900 flex flex-col">
-        {/* Header */}
-        <div className="bg-gray-800 p-4 text-white">
-          <div className="max-w-lg mx-auto flex justify-between items-center">
-            <h1 className="text-xl font-bold">{event.title}</h1>
-            <div className="flex gap-2">
-              <button onClick={toggleGallery} className="text-sm text-blue-400">
-                Back to Camera
-              </button>
-              <Link href={`/events/${code}`} className="text-sm text-blue-400">
-                Event Gallery
-              </Link>
-            </div>
+      <div className="min-h-screen bg-black flex flex-col">
+        {/* Gallery header - made smaller and more subtle */}
+        <div className="bg-black p-3 text-white border-b border-gray-800">
+          <div className="mx-auto flex justify-between items-center">
+            <button onClick={toggleGallery} className="flex items-center space-x-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span>Camera</span>
+            </button>
+            <h1 className="text-sm font-medium">{event.title}</h1>
+            <Link href={`/events/${code}`} className="text-sm text-blue-400">
+              Gallery
+            </Link>
           </div>
         </div>
         
         {/* Gallery content */}
-        <div className="flex-1 p-4 max-w-lg mx-auto w-full">
-          <h2 className="text-xl font-semibold text-white mb-4">Your Photos ({devicePhotos.length})</h2>
+        <div className="flex-1 p-2 w-full">
+          <h2 className="text-white text-sm mb-2 px-2">Your Photos ({devicePhotos.length})</h2>
           
           {devicePhotos.length === 0 ? (
             <div className="text-center text-white p-8">
               <p>You haven't taken any photos yet.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1">
               {devicePhotos.map((photo) => (
                 <div 
                   key={photo.id} 
-                  className="aspect-square relative overflow-hidden rounded-lg cursor-pointer"
+                  className="aspect-square relative overflow-hidden cursor-pointer"
                   onClick={() => viewPhoto(photo)}
                 >
                   <img 
@@ -655,28 +654,13 @@ export default function CapturePhotoPage({ params }) {
   
   // Camera view
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col">
-      {/* Header */}
-      <div className="bg-gray-800 p-4 text-white">
-        <div className="max-w-lg mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">{event.title}</h1>
-          <div className="flex gap-2">
-            <button onClick={toggleGallery} className="text-sm text-blue-400">
-              Your Photos ({devicePhotos.length})
-            </button>
-            <Link href={`/events/${code}`} className="text-sm text-blue-400">
-              Event Gallery
-            </Link>
-          </div>
-        </div>
-      </div>
-      
-      {/* Main content */}
-      <div className="flex-1 flex flex-col p-4 max-w-lg mx-auto w-full">
+    <div className="min-h-screen bg-black flex flex-col">
+      {/* Main content - removed the header for fullscreen camera experience */}
+      <div className="flex-1 flex flex-col w-full relative">
         {!photoTaken ? (
           <>
-            {/* Camera view */}
-            <div className="relative aspect-[3/4] w-full bg-black rounded-lg overflow-hidden mb-4">
+            {/* Camera view - made full width/height with no padding */}
+            <div className="relative w-full h-full bg-black flex-1">
               {!stream && (
                 <div className="absolute inset-0 flex items-center justify-center flex-col">
                   <p className="text-white mb-4">Camera access required</p>
@@ -697,80 +681,71 @@ export default function CapturePhotoPage({ params }) {
               />
             </div>
             
-            {/* Filter selection - only show if allowed filters has more than 1 option */}
-            {stream && allowedFilters.length > 1 && (
-              <div className="mb-4">
-                <div className="flex justify-center space-x-2 overflow-x-auto py-2">
-                  {allowedFilters.map((filterId) => (
-                    <button
-                      key={filterId}
-                      onClick={() => changeFilter(filterId)}
-                      className={`px-3 py-1 rounded-full text-xs ${
-                        currentFilter === filterId
-                          ? 'bg-orange-500 text-white'
-                          : 'bg-gray-700 text-white'
-                      }`}
-                    >
-                      {FILTERS[filterId].name}
-                    </button>
-                  ))}
-                </div>
+            {/* Floating controls overlay at the bottom */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+              {/* Mini icons for navigation */}
+              <div className="flex justify-between items-center mb-6">
+                <button 
+                  onClick={toggleGallery} 
+                  className="p-2 rounded-full bg-black/50 backdrop-blur-sm"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </button>
+                
+                <Link href={`/events/${code}`} className="p-2 rounded-full bg-black/50 backdrop-blur-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </Link>
               </div>
-            )}
-            
-            {/* Selected filter indicator when only one is allowed */}
-            {stream && allowedFilters.length === 1 && allowedFilters[0] !== 'none' && (
-              <div className="text-center text-white text-sm mb-4">
-                <span className="px-2 py-1 bg-gray-800 rounded-md inline-block">
-                  Filter: {FILTERS[allowedFilters[0]].name}
-                </span>
-              </div>
-            )}
-            
-            {/* Camera controls */}
-            {stream && (
-              <button
-                onClick={takePhoto}
-                className="mx-auto w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4"
-              >
-                <div className="w-14 h-14 rounded-full border-4 border-gray-800"></div>
-              </button>
-            )}
-            
-            {/* Device photos mini gallery */}
-            {devicePhotos.length > 0 && (
-              <div className="mt-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-white text-sm font-medium">Your recent photos</h3>
-                  <button 
-                    onClick={toggleGallery}
-                    className="text-xs text-blue-400"
-                  >
-                    View all
-                  </button>
+              
+              {/* Filter selection - only show if allowed filters has more than 1 option */}
+              {stream && allowedFilters.length > 1 && (
+                <div className="mb-4">
+                  <div className="flex justify-center space-x-2 overflow-x-auto py-2">
+                    {allowedFilters.map((filterId) => (
+                      <button
+                        key={filterId}
+                        onClick={() => changeFilter(filterId)}
+                        className={`px-3 py-1 rounded-full text-xs ${
+                          currentFilter === filterId
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-gray-700 text-white'
+                        }`}
+                      >
+                        {FILTERS[filterId].name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex overflow-x-auto gap-2 pb-2">
-                  {devicePhotos.slice(0, 5).map((photo) => (
-                    <div 
-                      key={photo.id} 
-                      className="h-20 w-20 flex-shrink-0 relative rounded-lg overflow-hidden"
-                      onClick={() => viewPhoto(photo)}
-                    >
-                      <img 
-                        src={photo.url} 
-                        alt={`Photo by ${photo.creator}`} 
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  ))}
+              )}
+              
+              {/* Selected filter indicator when only one is allowed */}
+              {stream && allowedFilters.length === 1 && allowedFilters[0] !== 'none' && (
+                <div className="text-center text-white text-sm mb-4">
+                  <span className="px-2 py-1 bg-black/50 backdrop-blur-sm rounded-md inline-block">
+                    Filter: {FILTERS[allowedFilters[0]].name}
+                  </span>
                 </div>
-              </div>
-            )}
+              )}
+              
+              {/* Camera controls */}
+              {stream && (
+                <button
+                  onClick={takePhoto}
+                  className="mx-auto w-18 h-18 rounded-full bg-white flex items-center justify-center"
+                >
+                  <div className="w-16 h-16 rounded-full border-4 border-gray-800"></div>
+                </button>
+              )}
+            </div>
           </>
         ) : (
           <>
-            {/* Photo preview */}
-            <div className="relative aspect-[3/4] w-full bg-black rounded-lg overflow-hidden mb-4">
+            {/* Photo preview - made full width/height */}
+            <div className="w-full h-full bg-black flex-1">
               <img
                 src={photoData}
                 alt="Captured photo"
@@ -778,46 +753,47 @@ export default function CapturePhotoPage({ params }) {
               />
             </div>
             
-            {!isUploading && !uploadSuccess && (
-              <div className="space-y-4">
-                <div className="flex space-x-2">
+            {/* Controls as overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+              {!isUploading && !uploadSuccess && (
+                <div className="flex space-x-4 justify-center">
                   <button
                     onClick={retakePhoto}
-                    className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-md"
+                    className="px-6 py-3 bg-gray-800/80 backdrop-blur-sm text-white rounded-full"
                   >
                     Retake
                   </button>
                   <button
                     onClick={uploadPhoto}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md"
+                    className="px-6 py-3 bg-blue-600 text-white rounded-full"
                   >
                     Upload
                   </button>
                 </div>
-              </div>
-            )}
-          </>
-        )}
-        
-        {isUploading && (
-          <div className="mt-4 bg-gray-800 p-4 rounded-lg">
-            <div className="h-2 w-full bg-gray-700 rounded-full">
-              <div 
-                className="h-full bg-blue-600 rounded-full" 
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
+              )}
+              
+              {isUploading && (
+                <div className="bg-black/50 backdrop-blur-sm p-4 rounded-lg">
+                  <div className="h-2 w-full bg-gray-700 rounded-full">
+                    <div 
+                      className="h-full bg-blue-600 rounded-full" 
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-center mt-2 text-white">
+                    Uploading... {uploadProgress}%
+                  </p>
+                </div>
+              )}
+              
+              {uploadSuccess && (
+                <div className="bg-green-900/70 backdrop-blur-sm p-4 rounded-lg text-center">
+                  <div className="text-green-400 text-xl mb-2">✓</div>
+                  <p className="text-white">Photo uploaded successfully!</p>
+                </div>
+              )}
             </div>
-            <p className="text-xs text-center mt-2 text-white">
-              Uploading... {uploadProgress}%
-            </p>
-          </div>
-        )}
-        
-        {uploadSuccess && (
-          <div className="mt-4 bg-green-900 p-4 rounded-lg text-center">
-            <div className="text-green-400 text-xl mb-2">✓</div>
-            <p className="text-white">Photo uploaded successfully!</p>
-          </div>
+          </>
         )}
       </div>
       

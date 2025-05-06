@@ -56,10 +56,14 @@ export default function PhotoGallery({ eventId, isAdminView = false }) {
   
   const openPhotoModal = (photo) => {
     setSelectedPhoto(photo);
+    // Prevent body scrolling when modal is open
+    document.body.style.overflow = 'hidden';
   };
   
   const closePhotoModal = () => {
     setSelectedPhoto(null);
+    // Re-enable body scrolling
+    document.body.style.overflow = 'auto';
   };
   
   const downloadSinglePhoto = async (photo) => {
@@ -154,7 +158,7 @@ export default function PhotoGallery({ eventId, isAdminView = false }) {
   
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[300px]">
+      <div className="flex justify-center items-center min-h-[200px]">
         <div className="text-center">
           <div className="w-12 h-12 border-t-4 border-orange-500 border-solid rounded-full animate-spin mx-auto mb-3"></div>
           <p className="text-gray-500">Cargando fotos...</p>
@@ -165,7 +169,7 @@ export default function PhotoGallery({ eventId, isAdminView = false }) {
   
   if (error) {
     return (
-      <div className="bg-red-50 p-6 rounded-lg border border-red-100 flex items-start">
+      <div className="bg-red-50 p-4 sm:p-6 rounded-lg border border-red-100 flex items-start">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 0v4m0-4h4m-4 0H8m16 0a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -187,9 +191,9 @@ export default function PhotoGallery({ eventId, isAdminView = false }) {
   
   if (photos.length === 0) {
     return (
-      <div className="text-center py-16 border rounded-lg bg-gray-50">
-        <div className="max-w-md mx-auto">
-          <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div className="text-center py-10 sm:py-16 border rounded-lg bg-gray-50">
+        <div className="max-w-md mx-auto px-4">
+          <svg className="w-14 h-14 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           <h3 className="text-xl font-semibold text-gray-700 mb-2">No hay fotos todavía</h3>
@@ -205,28 +209,28 @@ export default function PhotoGallery({ eventId, isAdminView = false }) {
       {isAdminView && (
         <div className="mb-6 flex flex-col sm:flex-row justify-between items-center bg-gray-50 p-4 rounded-lg">
           <div className="flex items-center mb-4 sm:mb-0">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-orange-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-orange-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <h3 className="text-lg font-semibold text-gray-700">Total de fotos: <span className="text-orange-600">{photos.length}</span></h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-700">Total: <span className="text-orange-600">{photos.length}</span></h3>
           </div>
           
           <button
             onClick={downloadAllPhotos}
             disabled={isDownloading || photos.length === 0}
-            className="btn btn-primary flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary flex items-center text-sm py-2 px-3 sm:px-4 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto justify-center"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            {isDownloading ? `Descargando (${downloadProgress}%)` : 'Descargar todas las fotos'}
+            {isDownloading ? `${downloadProgress}%` : 'Descargar todas'}
           </button>
         </div>
       )}
       
       {/* Download progress bar */}
       {isDownloading && (
-        <div className="mb-6 bg-gray-100 rounded-full overflow-hidden h-4">
+        <div className="mb-6 bg-gray-100 rounded-full overflow-hidden h-3 sm:h-4">
           <div 
             className="h-full bg-green-500 transition-all duration-300 ease-in-out flex items-center justify-center text-xs text-white font-medium"
             style={{ width: `${downloadProgress}%` }}
@@ -236,7 +240,8 @@ export default function PhotoGallery({ eventId, isAdminView = false }) {
         </div>
       )}
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* Photo grid - responsive columns */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
         {photos.map(photo => (
           <div 
             key={photo.id} 
@@ -246,8 +251,8 @@ export default function PhotoGallery({ eventId, isAdminView = false }) {
               className="relative aspect-square cursor-pointer overflow-hidden bg-gray-100"
               onClick={() => openPhotoModal(photo)}
             >
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                <div className="w-8 h-8 border-t-4 border-orange-500 border-solid rounded-full animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-0">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 border-t-3 sm:border-t-4 border-orange-500 border-solid rounded-full animate-spin"></div>
               </div>
               <img 
                 src={photo.url} 
@@ -260,9 +265,9 @@ export default function PhotoGallery({ eventId, isAdminView = false }) {
                 loading="lazy"
               />
             </div>
-            <div className="p-4">
-              <div className="flex justify-between items-center mb-2">
-                <p className="font-medium text-gray-800 truncate">
+            <div className="p-3 sm:p-4">
+              <div className="flex justify-between items-center mb-1 sm:mb-2">
+                <p className="font-medium text-gray-800 truncate text-sm sm:text-base">
                   {photo.creator}
                 </p>
                 <button 
@@ -273,25 +278,30 @@ export default function PhotoGallery({ eventId, isAdminView = false }) {
                   className="text-gray-500 hover:text-orange-500 transition-colors"
                   title="Descargar foto"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
                 </button>
               </div>
               <p className="text-xs text-gray-500">
-                {new Date(photo.createdAt).toLocaleString()}
+                {new Date(photo.createdAt).toLocaleString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
               </p>
             </div>
           </div>
         ))}
       </div>
       
-      <div className="mt-8 flex flex-col sm:flex-row justify-between gap-4">
+      <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-between gap-4">
         <button
           onClick={refreshGallery}
-          className="btn btn-secondary inline-flex items-center justify-center"
+          className="btn btn-secondary inline-flex items-center justify-center text-sm py-2 px-3"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           Actualizar galería
@@ -301,62 +311,62 @@ export default function PhotoGallery({ eventId, isAdminView = false }) {
           <button
             onClick={downloadAllPhotos}
             disabled={isDownloading}
-            className="btn btn-primary inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary inline-flex items-center justify-center text-sm py-2 px-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            {isDownloading ? `Descargando (${downloadProgress}%)` : 'Descargar todas las fotos'}
+            {isDownloading ? `Descargando ${downloadProgress}%` : 'Descargar todas'}
           </button>
         )}
       </div>
       
-      {/* Photo modal */}
+      {/* Photo modal - optimized for mobile */}
       {selectedPhoto && (
         <div 
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-2 sm:p-4 backdrop-blur-sm"
           onClick={closePhotoModal}
         >
           <div 
-            className="max-w-4xl max-h-[90vh] w-full bg-white rounded-lg shadow-2xl overflow-hidden"
+            className="max-w-4xl max-h-[95vh] w-full bg-white rounded-lg shadow-2xl overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
-            <div className="relative">
-              <div className="absolute top-4 right-4 z-10">
+            <div className="relative h-full">
+              <div className="absolute top-2 right-2 z-10 sm:top-4 sm:right-4">
                 <button
                   onClick={closePhotoModal}
-                  className="bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-70 transition-all"
+                  className="bg-black bg-opacity-50 text-white rounded-full p-1 sm:p-2 hover:bg-opacity-70 transition-all"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
-              <div className="bg-gray-900 flex items-center justify-center max-h-[70vh] relative">
+              <div className="bg-gray-900 flex items-center justify-center h-[70vh] sm:max-h-[75vh] relative">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-12 h-12 border-t-4 border-orange-500 border-solid rounded-full animate-spin"></div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 border-t-4 border-orange-500 border-solid rounded-full animate-spin"></div>
                 </div>
                 <img 
                   src={selectedPhoto.url} 
                   alt={`Foto por ${selectedPhoto.creator}`} 
-                  className="max-h-[70vh] max-w-full object-contain relative z-10"
+                  className="max-h-full max-w-full object-contain relative z-10"
                   onLoad={(e) => {
                     e.target.style.opacity = 1;
                   }}
                   style={{ opacity: 0, transition: "opacity 0.3s ease-in" }}
                 />
               </div>
-              <div className="p-4 bg-white">
+              <div className="p-3 sm:p-4 bg-white">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="font-medium text-gray-800">{selectedPhoto.creator}</p>
-                    <p className="text-sm text-gray-500">{new Date(selectedPhoto.createdAt).toLocaleString()}</p>
+                    <p className="font-medium text-gray-800 text-sm sm:text-base">{selectedPhoto.creator}</p>
+                    <p className="text-xs sm:text-sm text-gray-500">{new Date(selectedPhoto.createdAt).toLocaleString()}</p>
                   </div>
                   <button
                     onClick={() => downloadSinglePhoto(selectedPhoto)}
-                    className="btn btn-primary inline-flex items-center"
+                    className="btn btn-primary inline-flex items-center text-xs sm:text-sm py-1.5 px-2 sm:py-2 sm:px-3"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     Descargar

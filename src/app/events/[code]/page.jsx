@@ -190,52 +190,78 @@ export default function EventPage({ params }) {
   const isMaxPhotosReached = event.usedPhotos >= event.maxPhotos;
   
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="mb-6 flex justify-between items-center">
-        <Link href="/dashboard" className="text-blue-600 hover:underline">
-          &larr; Back to Home
+    <div className="container mx-auto px-4 py-6 sm:py-12">
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <Link href="/dashboard" className="text-blue-600 hover:underline flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Dashboard
         </Link>
         
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3 w-full sm:w-auto">
           <Link 
             href={`/events/${code}/gallery`}
             target='_blank'
-            className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 flex items-center"
+            className="px-3 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 flex items-center text-sm flex-1 sm:flex-auto justify-center sm:justify-start"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            View Public Gallery
+            View Gallery
           </Link>
           
           <Link 
             href={`/events/${code}/invite`}
-            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center"
+            className="px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center text-sm flex-1 sm:flex-auto justify-center sm:justify-start"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm5 11a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
               <path d="M4.5 6.5A1.5 1.5 0 016 5h.5a.5.5 0 010 1H6a.5.5 0 00-.5.5v7a.5.5 0 00.5.5h7a.5.5 0 00.5-.5v-.5a.5.5 0 011 0v.5a1.5 1.5 0 01-1.5 1.5h-7A1.5 1.5 0 014.5 13.5v-7z" />
             </svg>
             Invitation
           </Link>
+          
+          <Link 
+            href={`/events/${code}/capture`}
+            className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center text-sm flex-1 sm:flex-auto justify-center sm:justify-start"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Tomar Foto
+          </Link>
         </div>
       </div>
       
-      <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-        <div className="flex justify-between items-start mb-6">
+      <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start mb-6">
           <div className="w-full">
             {!isEditing ? (
               <>
-                <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
-                <p className="text-gray-500 mb-4">
-                  Event Code: <span className="font-mono font-bold">{event.code}</span>
-                </p>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2">{event.title}</h1>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4">
+                  <p className="text-gray-500">
+                    Event Code: <span className="font-mono font-bold">{event.code}</span>
+                  </p>
+                  <div className="sm:hidden">
+                    <p className="text-sm text-gray-500">
+                      Photos: {event.usedPhotos} / {event.maxPhotos}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Expires: {new Date(event.expiresAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
                 <div className="flex space-x-3 mb-4">
                   <button 
                     onClick={() => setIsEditing(true)}
-                    className="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+                    className="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 text-sm"
                   >
                     Edit Event Details
                   </button>
@@ -295,18 +321,18 @@ export default function EventPage({ params }) {
                   </select>
                 </div>
                 
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-2">
                   <button
                     onClick={handleSaveChanges}
                     disabled={isSaving}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 text-sm"
                   >
                     {isSaving ? 'Saving...' : 'Save Changes'}
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
                     disabled={isSaving}
-                    className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                    className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 text-sm"
                   >
                     Cancel
                   </button>
@@ -315,7 +341,7 @@ export default function EventPage({ params }) {
             )}
           </div>
           
-          <div className="text-right">
+          <div className="hidden sm:block text-right">
             <p className="text-sm text-gray-500">
               Photos: {event.usedPhotos} / {event.maxPhotos}
             </p>
@@ -339,7 +365,7 @@ export default function EventPage({ params }) {
             This event has reached the maximum number of photos. You can view photos but cannot add new ones.
           </div>
         ) : (
-          <div className="mb-8">
+          <div className="mb-6">
             <h2 className="text-xl font-bold mb-4">Add Photos (Admin Upload)</h2>
             <PhotoUploader 
               eventId={event.id} 
