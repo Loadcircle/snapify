@@ -141,7 +141,7 @@ export default function PublicGalleryPage({ params }) {
         <div className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-white mb-4">{event.title}</h1>
           <p className="text-white mb-6">No photos available in this gallery yet.</p>
-          <Link href={`/events/${code}/capture`} className="px-4 py-2 bg-orange-500 text-white rounded-md">
+          <Link href={`/capture/${code}`} className="px-4 py-2 bg-orange-500 text-white rounded-md">
             Add Photos
           </Link>
         </div>
@@ -173,7 +173,7 @@ export default function PublicGalleryPage({ params }) {
               </button>
             </div>
             
-            <Link href={`/events/${code}/capture`} className="text-sm bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded">
+            <Link href={`/capture/${code}`} className="text-sm bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded">
               Add Photos
             </Link>
             

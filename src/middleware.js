@@ -32,7 +32,7 @@ export async function middleware(request) {
     if (!isAuth) {
       // Extract the event code from the URL
       const eventCode = pathname.split('/').pop();
-      return NextResponse.redirect(new URL(`/events/${eventCode}/capture`, request.url));
+      return NextResponse.redirect(new URL(`/capture/${eventCode}`, request.url));
     }
   }
 

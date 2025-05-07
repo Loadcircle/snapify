@@ -71,6 +71,7 @@ model Event {
   title          String   // custom event name
   code           String   @unique
   maxPhotos      Int
+  maxPhotosPerUser Int?   // Optional limit of photos per user
   usedPhotos     Int      @default(0) // counter of uploaded photos
   allowedFilters String?  // comma-separated list of allowed filter IDs
   expiresAt      DateTime

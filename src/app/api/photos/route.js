@@ -76,13 +76,12 @@ export async function POST(request) {
     
     // If deviceId is provided, check if the device has reached its limit
     if (body.deviceId) {
-      // For now, hard-code a limit of 10 photos per device
       const devicePhotoCount = await countPhotosByDeviceInEvent(body.eventId, body.deviceId);
-      const maxPhotosPerDevice = 10; // This could be a setting in the event
+      const maxPhotosPerDevice = event.maxPhotosPerUser || event.maxPhotos;
       
       if (devicePhotoCount >= maxPhotosPerDevice) {
         return NextResponse.json(
-          { error: 'You have reached the maximum number of photos for this event' }, 
+          { error: 'You have reached the maximum number of photos allowed for this event' }, 
           { status: 400 }
         );
       }

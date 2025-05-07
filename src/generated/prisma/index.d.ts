@@ -5792,11 +5792,13 @@ export namespace Prisma {
 
   export type EventAvgAggregateOutputType = {
     maxPhotos: number | null
+    maxPhotosPerUser: number | null
     usedPhotos: number | null
   }
 
   export type EventSumAggregateOutputType = {
     maxPhotos: number | null
+    maxPhotosPerUser: number | null
     usedPhotos: number | null
   }
 
@@ -5805,6 +5807,7 @@ export namespace Prisma {
     title: string | null
     code: string | null
     maxPhotos: number | null
+    maxPhotosPerUser: number | null
     usedPhotos: number | null
     allowedFilters: string | null
     expiresAt: Date | null
@@ -5817,6 +5820,7 @@ export namespace Prisma {
     title: string | null
     code: string | null
     maxPhotos: number | null
+    maxPhotosPerUser: number | null
     usedPhotos: number | null
     allowedFilters: string | null
     expiresAt: Date | null
@@ -5829,6 +5833,7 @@ export namespace Prisma {
     title: number
     code: number
     maxPhotos: number
+    maxPhotosPerUser: number
     usedPhotos: number
     allowedFilters: number
     expiresAt: number
@@ -5840,11 +5845,13 @@ export namespace Prisma {
 
   export type EventAvgAggregateInputType = {
     maxPhotos?: true
+    maxPhotosPerUser?: true
     usedPhotos?: true
   }
 
   export type EventSumAggregateInputType = {
     maxPhotos?: true
+    maxPhotosPerUser?: true
     usedPhotos?: true
   }
 
@@ -5853,6 +5860,7 @@ export namespace Prisma {
     title?: true
     code?: true
     maxPhotos?: true
+    maxPhotosPerUser?: true
     usedPhotos?: true
     allowedFilters?: true
     expiresAt?: true
@@ -5865,6 +5873,7 @@ export namespace Prisma {
     title?: true
     code?: true
     maxPhotos?: true
+    maxPhotosPerUser?: true
     usedPhotos?: true
     allowedFilters?: true
     expiresAt?: true
@@ -5877,6 +5886,7 @@ export namespace Prisma {
     title?: true
     code?: true
     maxPhotos?: true
+    maxPhotosPerUser?: true
     usedPhotos?: true
     allowedFilters?: true
     expiresAt?: true
@@ -5976,6 +5986,7 @@ export namespace Prisma {
     title: string
     code: string
     maxPhotos: number
+    maxPhotosPerUser: number | null
     usedPhotos: number
     allowedFilters: string | null
     expiresAt: Date
@@ -6007,6 +6018,7 @@ export namespace Prisma {
     title?: boolean
     code?: boolean
     maxPhotos?: boolean
+    maxPhotosPerUser?: boolean
     usedPhotos?: boolean
     allowedFilters?: boolean
     expiresAt?: boolean
@@ -6022,6 +6034,7 @@ export namespace Prisma {
     title?: boolean
     code?: boolean
     maxPhotos?: boolean
+    maxPhotosPerUser?: boolean
     usedPhotos?: boolean
     allowedFilters?: boolean
     expiresAt?: boolean
@@ -6035,6 +6048,7 @@ export namespace Prisma {
     title?: boolean
     code?: boolean
     maxPhotos?: boolean
+    maxPhotosPerUser?: boolean
     usedPhotos?: boolean
     allowedFilters?: boolean
     expiresAt?: boolean
@@ -6048,6 +6062,7 @@ export namespace Prisma {
     title?: boolean
     code?: boolean
     maxPhotos?: boolean
+    maxPhotosPerUser?: boolean
     usedPhotos?: boolean
     allowedFilters?: boolean
     expiresAt?: boolean
@@ -6055,7 +6070,7 @@ export namespace Prisma {
     createdById?: boolean
   }
 
-  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "code" | "maxPhotos" | "usedPhotos" | "allowedFilters" | "expiresAt" | "createdAt" | "createdById", ExtArgs["result"]["event"]>
+  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "code" | "maxPhotos" | "maxPhotosPerUser" | "usedPhotos" | "allowedFilters" | "expiresAt" | "createdAt" | "createdById", ExtArgs["result"]["event"]>
   export type EventInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     photos?: boolean | Event$photosArgs<ExtArgs>
     createdBy?: boolean | Event$createdByArgs<ExtArgs>
@@ -6079,6 +6094,7 @@ export namespace Prisma {
       title: string
       code: string
       maxPhotos: number
+      maxPhotosPerUser: number | null
       usedPhotos: number
       allowedFilters: string | null
       expiresAt: Date
@@ -6513,6 +6529,7 @@ export namespace Prisma {
     readonly title: FieldRef<"Event", 'String'>
     readonly code: FieldRef<"Event", 'String'>
     readonly maxPhotos: FieldRef<"Event", 'Int'>
+    readonly maxPhotosPerUser: FieldRef<"Event", 'Int'>
     readonly usedPhotos: FieldRef<"Event", 'Int'>
     readonly allowedFilters: FieldRef<"Event", 'String'>
     readonly expiresAt: FieldRef<"Event", 'DateTime'>
@@ -8194,6 +8211,7 @@ export namespace Prisma {
     title: 'title',
     code: 'code',
     maxPhotos: 'maxPhotos',
+    maxPhotosPerUser: 'maxPhotosPerUser',
     usedPhotos: 'usedPhotos',
     allowedFilters: 'allowedFilters',
     expiresAt: 'expiresAt',
@@ -8582,6 +8600,7 @@ export namespace Prisma {
     title?: StringFilter<"Event"> | string
     code?: StringFilter<"Event"> | string
     maxPhotos?: IntFilter<"Event"> | number
+    maxPhotosPerUser?: IntNullableFilter<"Event"> | number | null
     usedPhotos?: IntFilter<"Event"> | number
     allowedFilters?: StringNullableFilter<"Event"> | string | null
     expiresAt?: DateTimeFilter<"Event"> | Date | string
@@ -8596,6 +8615,7 @@ export namespace Prisma {
     title?: SortOrder
     code?: SortOrder
     maxPhotos?: SortOrder
+    maxPhotosPerUser?: SortOrderInput | SortOrder
     usedPhotos?: SortOrder
     allowedFilters?: SortOrderInput | SortOrder
     expiresAt?: SortOrder
@@ -8613,6 +8633,7 @@ export namespace Prisma {
     NOT?: EventWhereInput | EventWhereInput[]
     title?: StringFilter<"Event"> | string
     maxPhotos?: IntFilter<"Event"> | number
+    maxPhotosPerUser?: IntNullableFilter<"Event"> | number | null
     usedPhotos?: IntFilter<"Event"> | number
     allowedFilters?: StringNullableFilter<"Event"> | string | null
     expiresAt?: DateTimeFilter<"Event"> | Date | string
@@ -8627,6 +8648,7 @@ export namespace Prisma {
     title?: SortOrder
     code?: SortOrder
     maxPhotos?: SortOrder
+    maxPhotosPerUser?: SortOrderInput | SortOrder
     usedPhotos?: SortOrder
     allowedFilters?: SortOrderInput | SortOrder
     expiresAt?: SortOrder
@@ -8647,6 +8669,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Event"> | string
     code?: StringWithAggregatesFilter<"Event"> | string
     maxPhotos?: IntWithAggregatesFilter<"Event"> | number
+    maxPhotosPerUser?: IntNullableWithAggregatesFilter<"Event"> | number | null
     usedPhotos?: IntWithAggregatesFilter<"Event"> | number
     allowedFilters?: StringNullableWithAggregatesFilter<"Event"> | string | null
     expiresAt?: DateTimeWithAggregatesFilter<"Event"> | Date | string
@@ -9026,6 +9049,7 @@ export namespace Prisma {
     title: string
     code: string
     maxPhotos: number
+    maxPhotosPerUser?: number | null
     usedPhotos?: number
     allowedFilters?: string | null
     expiresAt: Date | string
@@ -9039,6 +9063,7 @@ export namespace Prisma {
     title: string
     code: string
     maxPhotos: number
+    maxPhotosPerUser?: number | null
     usedPhotos?: number
     allowedFilters?: string | null
     expiresAt: Date | string
@@ -9052,6 +9077,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     maxPhotos?: IntFieldUpdateOperationsInput | number
+    maxPhotosPerUser?: NullableIntFieldUpdateOperationsInput | number | null
     usedPhotos?: IntFieldUpdateOperationsInput | number
     allowedFilters?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9065,6 +9091,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     maxPhotos?: IntFieldUpdateOperationsInput | number
+    maxPhotosPerUser?: NullableIntFieldUpdateOperationsInput | number | null
     usedPhotos?: IntFieldUpdateOperationsInput | number
     allowedFilters?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9078,6 +9105,7 @@ export namespace Prisma {
     title: string
     code: string
     maxPhotos: number
+    maxPhotosPerUser?: number | null
     usedPhotos?: number
     allowedFilters?: string | null
     expiresAt: Date | string
@@ -9090,6 +9118,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     maxPhotos?: IntFieldUpdateOperationsInput | number
+    maxPhotosPerUser?: NullableIntFieldUpdateOperationsInput | number | null
     usedPhotos?: IntFieldUpdateOperationsInput | number
     allowedFilters?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9101,6 +9130,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     maxPhotos?: IntFieldUpdateOperationsInput | number
+    maxPhotosPerUser?: NullableIntFieldUpdateOperationsInput | number | null
     usedPhotos?: IntFieldUpdateOperationsInput | number
     allowedFilters?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9543,6 +9573,7 @@ export namespace Prisma {
     title?: SortOrder
     code?: SortOrder
     maxPhotos?: SortOrder
+    maxPhotosPerUser?: SortOrder
     usedPhotos?: SortOrder
     allowedFilters?: SortOrder
     expiresAt?: SortOrder
@@ -9552,6 +9583,7 @@ export namespace Prisma {
 
   export type EventAvgOrderByAggregateInput = {
     maxPhotos?: SortOrder
+    maxPhotosPerUser?: SortOrder
     usedPhotos?: SortOrder
   }
 
@@ -9560,6 +9592,7 @@ export namespace Prisma {
     title?: SortOrder
     code?: SortOrder
     maxPhotos?: SortOrder
+    maxPhotosPerUser?: SortOrder
     usedPhotos?: SortOrder
     allowedFilters?: SortOrder
     expiresAt?: SortOrder
@@ -9572,6 +9605,7 @@ export namespace Prisma {
     title?: SortOrder
     code?: SortOrder
     maxPhotos?: SortOrder
+    maxPhotosPerUser?: SortOrder
     usedPhotos?: SortOrder
     allowedFilters?: SortOrder
     expiresAt?: SortOrder
@@ -9581,6 +9615,7 @@ export namespace Prisma {
 
   export type EventSumOrderByAggregateInput = {
     maxPhotos?: SortOrder
+    maxPhotosPerUser?: SortOrder
     usedPhotos?: SortOrder
   }
 
@@ -10162,6 +10197,7 @@ export namespace Prisma {
     title: string
     code: string
     maxPhotos: number
+    maxPhotosPerUser?: number | null
     usedPhotos?: number
     allowedFilters?: string | null
     expiresAt: Date | string
@@ -10174,6 +10210,7 @@ export namespace Prisma {
     title: string
     code: string
     maxPhotos: number
+    maxPhotosPerUser?: number | null
     usedPhotos?: number
     allowedFilters?: string | null
     expiresAt: Date | string
@@ -10275,6 +10312,7 @@ export namespace Prisma {
     title?: StringFilter<"Event"> | string
     code?: StringFilter<"Event"> | string
     maxPhotos?: IntFilter<"Event"> | number
+    maxPhotosPerUser?: IntNullableFilter<"Event"> | number | null
     usedPhotos?: IntFilter<"Event"> | number
     allowedFilters?: StringNullableFilter<"Event"> | string | null
     expiresAt?: DateTimeFilter<"Event"> | Date | string
@@ -10566,6 +10604,7 @@ export namespace Prisma {
     title: string
     code: string
     maxPhotos: number
+    maxPhotosPerUser?: number | null
     usedPhotos?: number
     allowedFilters?: string | null
     expiresAt: Date | string
@@ -10578,6 +10617,7 @@ export namespace Prisma {
     title: string
     code: string
     maxPhotos: number
+    maxPhotosPerUser?: number | null
     usedPhotos?: number
     allowedFilters?: string | null
     expiresAt: Date | string
@@ -10606,6 +10646,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     maxPhotos?: IntFieldUpdateOperationsInput | number
+    maxPhotosPerUser?: NullableIntFieldUpdateOperationsInput | number | null
     usedPhotos?: IntFieldUpdateOperationsInput | number
     allowedFilters?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10618,6 +10659,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     maxPhotos?: IntFieldUpdateOperationsInput | number
+    maxPhotosPerUser?: NullableIntFieldUpdateOperationsInput | number | null
     usedPhotos?: IntFieldUpdateOperationsInput | number
     allowedFilters?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10650,6 +10692,7 @@ export namespace Prisma {
     title: string
     code: string
     maxPhotos: number
+    maxPhotosPerUser?: number | null
     usedPhotos?: number
     allowedFilters?: string | null
     expiresAt: Date | string
@@ -10721,6 +10764,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     maxPhotos?: IntFieldUpdateOperationsInput | number
+    maxPhotosPerUser?: NullableIntFieldUpdateOperationsInput | number | null
     usedPhotos?: IntFieldUpdateOperationsInput | number
     allowedFilters?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10733,6 +10777,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     maxPhotos?: IntFieldUpdateOperationsInput | number
+    maxPhotosPerUser?: NullableIntFieldUpdateOperationsInput | number | null
     usedPhotos?: IntFieldUpdateOperationsInput | number
     allowedFilters?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10745,6 +10790,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     code?: StringFieldUpdateOperationsInput | string
     maxPhotos?: IntFieldUpdateOperationsInput | number
+    maxPhotosPerUser?: NullableIntFieldUpdateOperationsInput | number | null
     usedPhotos?: IntFieldUpdateOperationsInput | number
     allowedFilters?: NullableStringFieldUpdateOperationsInput | string | null
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string

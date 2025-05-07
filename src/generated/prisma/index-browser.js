@@ -162,6 +162,7 @@ exports.Prisma.EventScalarFieldEnum = {
   title: 'title',
   code: 'code',
   maxPhotos: 'maxPhotos',
+  maxPhotosPerUser: 'maxPhotosPerUser',
   usedPhotos: 'usedPhotos',
   allowedFilters: 'allowedFilters',
   expiresAt: 'expiresAt',

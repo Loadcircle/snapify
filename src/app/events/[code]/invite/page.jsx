@@ -70,7 +70,7 @@ export default function InvitePage({ params }) {
   }
 
   // Create QR code URL - direct to the capture page
-  const captureUrl = `${baseUrl}/events/${code}/capture`;
+  const captureUrl = `${baseUrl}/capture/${code}`;
   const galleryUrl = `${baseUrl}/events/${code}/gallery`;
 
   // Format date for display

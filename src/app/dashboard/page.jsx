@@ -182,7 +182,7 @@ export default function UserDashboard() {
                           Ver evento
                         </Link>
                         <Link 
-                          href={`/events/${event.code}/capture`} 
+                          href={`/capture/${event.code}`} 
                           className="text-blue-500 hover:text-blue-700 transition-colors flex items-center"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -272,7 +272,7 @@ export default function UserDashboard() {
                             Ver
                           </Link>
                           <Link 
-                            href={`/events/${event.code}/capture`} 
+                            href={`/capture/${event.code}`} 
                             className="text-blue-500 hover:text-blue-700 transition-colors flex items-center"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -31,6 +31,7 @@ export default function EventPage({ params }) {
   const [title, setTitle] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
   const [allowedFilters, setAllowedFilters] = useState(['none']);
+  const [maxPhotosPerUser, setMaxPhotosPerUser] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -54,6 +55,7 @@ export default function EventPage({ params }) {
         setTitle(data.title);
         setExpiresAt(new Date(data.expiresAt).toISOString().split('T')[0]);
         setAllowedFilters(data.allowedFilters ? data.allowedFilters.split(',') : ['none']);
+        setMaxPhotosPerUser(data.maxPhotosPerUser || data.maxPhotos);
       } catch (error) {
         console.error('Error fetching event:', error);
         setError(error.message || 'Failed to load event. Please try again.');
@@ -68,7 +70,7 @@ export default function EventPage({ params }) {
   // Redirect to capture page if user is not authenticated
   useEffect(() => {
     if (status !== 'loading' && !session) {
-      router.push(`/events/${code}/capture`);
+      router.push(`/capture/${code}`);
     }
   }, [session, status, code, router]);
   
@@ -94,6 +96,7 @@ export default function EventPage({ params }) {
         title,
         expiresAt: expiresAtDate.toISOString(),
         allowedFilters: allowedFilters.join(','),
+        maxPhotosPerUser: maxPhotosPerUser ? parseInt(maxPhotosPerUser) : event.maxPhotos,
       };
       
       const response = await fetch(`/api/events/${code}`, {
@@ -128,15 +131,20 @@ export default function EventPage({ params }) {
   };
   
   const handleFilterChange = (e) => {
-    const { options } = e.target;
-    
-    // Get all selected options
-    const selectedFilters = Array.from(options)
-      .filter(option => option.selected)
-      .map(option => option.value);
-    
-    // Ensure we have at least one filter
-    setAllowedFilters(selectedFilters.length > 0 ? selectedFilters : ['none']);
+    const filterId = e.target.value;
+    setAllowedFilters(prev => {
+      // If trying to deselect the last filter, prevent it
+      if (prev.length === 1 && prev.includes(filterId)) {
+        return prev;
+      }
+      
+      // Toggle the filter
+      if (prev.includes(filterId)) {
+        return prev.filter(id => id !== filterId);
+      } else {
+        return [...prev, filterId];
+      }
+    });
   };
   
   // Show loading state while checking authentication
@@ -225,7 +233,7 @@ export default function EventPage({ params }) {
           </Link>
           
           <Link 
-            href={`/events/${code}/capture`}
+            href={`/capture/${code}`}
             className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center text-sm flex-1 sm:flex-auto justify-center sm:justify-start"
             target="_blank"
             rel="noopener noreferrer"
@@ -299,26 +307,52 @@ export default function EventPage({ params }) {
                   />
                 </div>
                 
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">
+                    Photos per User Limit (Optional)
+                  </label>
+                  <input
+                    type="number"
+                    value={maxPhotosPerUser}
+                    onChange={(e) => setMaxPhotosPerUser(e.target.value)}
+                    min="1"
+                    max={event.maxPhotos}
+                    placeholder={`Default: ${event.maxPhotos}`}
+                    className="w-full p-2 border rounded-md"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Maximum number of photos each user can upload. Leave empty to use event limit.
+                  </p>
+                </div>
+                
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-1">
                     Allowed Filters
                   </label>
                   <div className="mb-1 text-xs text-gray-500">
-                    Hold CTRL/CMD key to select multiple filters. Select only one filter to force all photos with that filter.
+                    Select the filters you want to allow for this event. At least one filter must be selected.
                   </div>
-                  <select
-                    value={allowedFilters}
-                    onChange={handleFilterChange}
-                    className="w-full p-2 border rounded-md"
-                    multiple
-                    size={Object.keys(FILTERS).length}
-                  >
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
                     {Object.entries(FILTERS).map(([id, filter]) => (
-                      <option key={id} value={id}>
+                      <label
+                        key={id}
+                        className={`p-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                          allowedFilters.includes(id)
+                            ? 'bg-blue-600 text-white hover:bg-blue-700'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          value={id}
+                          checked={allowedFilters.includes(id)}
+                          onChange={handleFilterChange}
+                          className="hidden"
+                        />
                         {filter.name}
-                      </option>
+                      </label>
                     ))}
-                  </select>
+                  </div>
                 </div>
                 
                 <div className="flex flex-wrap gap-2">
