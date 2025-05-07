@@ -248,36 +248,13 @@ export default function EventPage({ params }) {
       </div>
       
       <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 mb-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start mb-6">
-          <div className="w-full">
-            {!isEditing ? (
-              <>
-                <h1 className="text-2xl sm:text-3xl font-bold mb-2">{event.title}</h1>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4">
-                  <p className="text-gray-500">
-                    Event Code: <span className="font-mono font-bold">{event.code}</span>
-                  </p>
-                  <div className="sm:hidden">
-                    <p className="text-sm text-gray-500">
-                      Photos: {event.usedPhotos} / {event.maxPhotos}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Expires: {new Date(event.expiresAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex space-x-3 mb-4">
-                  <button 
-                    onClick={() => setIsEditing(true)}
-                    className="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 text-sm"
-                  >
-                    Edit Event Details
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="mb-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Event Details Form */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-bold mb-4">Event Details</h2>
+              <div className="space-y-4">
+                <div>
                   <label className="block text-sm font-medium mb-1">
                     Title
                   </label>
@@ -289,13 +266,13 @@ export default function EventPage({ params }) {
                   />
                 </div>
                 
-                <div className="mb-3">
+                <div>
                   <p className="block text-sm font-medium mb-1">
                     Event Code: <span className="font-mono font-bold">{event.code}</span>
                   </p>
                 </div>
                 
-                <div className="mb-3">
+                <div>
                   <label className="block text-sm font-medium mb-1">
                     Expiration Date
                   </label>
@@ -307,7 +284,7 @@ export default function EventPage({ params }) {
                   />
                 </div>
                 
-                <div className="mb-3">
+                <div>
                   <label className="block text-sm font-medium mb-1">
                     Photos per User Limit (Optional)
                   </label>
@@ -325,7 +302,7 @@ export default function EventPage({ params }) {
                   </p>
                 </div>
                 
-                <div className="mb-4">
+                <div>
                   <label className="block text-sm font-medium mb-1">
                     Allowed Filters
                   </label>
@@ -363,43 +340,48 @@ export default function EventPage({ params }) {
                   >
                     {isSaving ? 'Saving...' : 'Save Changes'}
                   </button>
-                  <button
-                    onClick={() => setIsEditing(false)}
-                    disabled={isSaving}
-                    className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 text-sm"
-                  >
-                    Cancel
-                  </button>
                 </div>
-              </>
-            )}
+              </div>
+            </div>
           </div>
-          
-          <div className="hidden sm:block text-right">
-            <p className="text-sm text-gray-500">
-              Photos: {event.usedPhotos} / {event.maxPhotos}
-            </p>
-            <p className="text-sm text-gray-500">
-              Expires: {new Date(event.expiresAt).toLocaleDateString()}
-            </p>
+
+          {/* Event Stats */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-bold mb-4">Event Statistics</h2>
+              <div className="bg-gray-50 p-4 rounded-lg space-y-4">
+                <div>
+                  <p className="text-sm text-gray-500">Total Photos</p>
+                  <p className="text-2xl font-bold">{event.usedPhotos} / {event.maxPhotos}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Expiration Date</p>
+                  <p className="text-lg font-semibold">{new Date(event.expiresAt).toLocaleDateString()}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Photos per User Limit</p>
+                  <p className="text-lg font-semibold">{maxPhotosPerUser || event.maxPhotos}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-md text-blue-700">
+              <p className="font-semibold">Admin View</p>
+              <p className="text-sm">This is the admin view for managing this event. Guests can upload photos by scanning the QR code or visiting the invitation page.</p>
+            </div>
           </div>
-        </div>
-        
-        <div className="bg-blue-50 p-4 rounded-md text-blue-700 mb-6">
-          <p className="font-semibold">Admin View</p>
-          <p className="text-sm">This is the admin view for managing this event. Guests can upload photos by scanning the QR code or visiting the invitation page.</p>
         </div>
         
         {isExpired ? (
-          <div className="bg-yellow-50 p-4 rounded-md text-yellow-700 mb-6">
+          <div className="bg-yellow-50 p-4 rounded-md text-yellow-700 mt-6">
             This event has expired. You can view photos but cannot add new ones.
           </div>
         ) : isMaxPhotosReached ? (
-          <div className="bg-yellow-50 p-4 rounded-md text-yellow-700 mb-6">
+          <div className="bg-yellow-50 p-4 rounded-md text-yellow-700 mt-6">
             This event has reached the maximum number of photos. You can view photos but cannot add new ones.
           </div>
         ) : (
-          <div className="mb-6">
+          <div className="mt-6">
             <h2 className="text-xl font-bold mb-4">Add Photos (Admin Upload)</h2>
             <PhotoUploader 
               eventId={event.id} 
@@ -410,7 +392,7 @@ export default function EventPage({ params }) {
           </div>
         )}
         
-        <div>
+        <div className="mt-6">
           <h2 className="text-xl font-bold mb-4">Photo Gallery</h2>
           <PhotoGallery eventId={event.id} isAdminView={true} />
         </div>
