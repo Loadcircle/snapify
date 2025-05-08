@@ -13,12 +13,6 @@ export default function UserDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect if not authenticated
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin');
-      return;
-    }
-
     const fetchUserEvents = async () => {
       if (!session) return;
       
@@ -43,7 +37,7 @@ export default function UserDashboard() {
     if (session) {
       fetchUserEvents();
     }
-  }, [session, status, router]);
+  }, [session]);
   
   if (status === 'loading') {
     return (
