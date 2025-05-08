@@ -4,7 +4,8 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-function AuthErrorContent() {
+// Separate component for the error content
+function ErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get('error');
 
@@ -26,43 +27,45 @@ function AuthErrorContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Authentication Error</h1>
-          <p className="text-gray-700 mb-6">{errorMessage}</p>
-          <div className="flex flex-col space-y-3">
-            <Link 
-              href="/auth/signin" 
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Back to Sign In
-            </Link>
-            <Link 
-              href="/" 
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-            >
-              Go to Home
-            </Link>
-          </div>
-        </div>
+    <div className="text-center">
+      <h1 className="text-2xl font-bold text-red-600 mb-4">Authentication Error</h1>
+      <p className="text-gray-700 mb-6">{errorMessage}</p>
+      <div className="flex flex-col space-y-3">
+        <Link 
+          href="/auth/signin" 
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          Back to Sign In
+        </Link>
+        <Link 
+          href="/" 
+          className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+        >
+          Go to Home
+        </Link>
       </div>
     </div>
   );
 }
 
+// Loading component
+function Loading() {
+  return (
+    <div className="text-center">
+      <p className="text-gray-500">Loading...</p>
+    </div>
+  );
+}
+
+// Main page component
 export default function AuthError() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
-        <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-          <div className="text-center">
-            <p className="text-gray-500">Loading...</p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
+      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
+        <Suspense fallback={<Loading />}>
+          <ErrorContent />
+        </Suspense>
       </div>
-    }>
-      <AuthErrorContent />
-    </Suspense>
+    </div>
   );
 } 
