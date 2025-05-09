@@ -101,11 +101,6 @@ export default function InvitePage({ params }) {
                 bgColor="#FFFFFF"
               />
             </div>
-            <p className="text-sm text-center text-gray-600 mt-2">
-              O ve a: <a href={captureUrl} className="text-orange-600 hover:underline break-all" target="_blank" rel="noopener noreferrer">
-                { captureUrl }
-              </a>
-            </p>
           </div>
           
           {/* Instrucciones claras */}
@@ -177,6 +172,11 @@ export default function InvitePage({ params }) {
           >
             Ver galería
           </Link>
+        </div>
+        <div className="w-full text-center mt-2 mb-2">
+          <p className="text-xs text-gray-600 break-all">
+            O visita en tu teléfono: <a href={captureUrl} className="text-orange-600 hover:underline break-all" target="_blank" rel="noopener noreferrer">{captureUrl}</a>
+          </p>
         </div>
         
         {/* Marca de agua */}
