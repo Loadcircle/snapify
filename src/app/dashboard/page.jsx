@@ -21,14 +21,14 @@ export default function UserDashboard() {
         const response = await fetch('/api/events/user');
         
         if (!response.ok) {
-          throw new Error('Failed to load your events. Please try again.');
+          throw new Error('Error al cargar tus eventos. Por favor intenta de nuevo.');
         }
         
         const data = await response.json();
         setEvents(data);
       } catch (error) {
-        console.error('Error fetching user events:', error);
-        setError(error.message || 'Failed to load your events. Please try again.');
+        console.error('Error al obtener eventos del usuario:', error);
+        setError(error.message || 'Error al cargar tus eventos. Por favor intenta de nuevo.');
       } finally {
         setIsLoading(false);
       }
@@ -120,7 +120,7 @@ export default function UserDashboard() {
           </div>
         ) : (
           <>
-            {/* Mobile view (card format) */}
+            {/* Vista móvil (formato de tarjeta) */}
             <div className="block md:hidden">
               <div className="space-y-4">
                 {events.map((event) => (
@@ -192,7 +192,7 @@ export default function UserDashboard() {
               </div>
             </div>
             
-            {/* Desktop view (table format) */}
+            {/* Vista de escritorio (formato de tabla) */}
             <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                 <thead className="bg-gray-50">

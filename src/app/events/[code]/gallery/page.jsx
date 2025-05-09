@@ -30,9 +30,9 @@ export default function PublicGalleryPage({ params }) {
         
         if (!eventResponse.ok) {
           if (eventResponse.status === 404) {
-            throw new Error('Event not found. Please check the code and try again.');
+            throw new Error('Evento no encontrado. Por favor verifica el código e intenta de nuevo.');
           }
-          throw new Error('Failed to load event. Please try again.');
+          throw new Error('Error al cargar el evento. Por favor intenta de nuevo.');
         }
         
         const eventData = await eventResponse.json();
@@ -47,14 +47,14 @@ export default function PublicGalleryPage({ params }) {
         const photosResponse = await fetch(`/api/photos?eventId=${eventData.id}`);
         
         if (!photosResponse.ok) {
-          throw new Error('Failed to fetch photos');
+          throw new Error('Error al obtener las fotos');
         }
         
         const photosData = await photosResponse.json();
         setPhotos(photosData);
       } catch (error) {
-        console.error('Error loading gallery:', error);
-        setError(error.message || 'Failed to load gallery. Please try again.');
+        console.error('Error al cargar la galería:', error);
+        setError(error.message || 'Error al cargar la galería. Por favor intenta de nuevo.');
       } finally {
         setIsLoading(false);
       }
@@ -112,7 +112,7 @@ export default function PublicGalleryPage({ params }) {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-black">
-        <div className="animate-pulse text-white">Loading gallery...</div>
+        <div className="animate-pulse text-white">Cargando galería...</div>
       </div>
     );
   }
@@ -124,7 +124,7 @@ export default function PublicGalleryPage({ params }) {
           <h1 className="text-2xl font-bold text-red-500 mb-4">Error</h1>
           <p className="text-white mb-6">{error}</p>
           <Link href="/" className="px-4 py-2 bg-blue-600 text-white rounded-md">
-            Go Back Home
+            Volver al Inicio
           </Link>
         </div>
       </div>
@@ -140,9 +140,9 @@ export default function PublicGalleryPage({ params }) {
       <div className="min-h-screen bg-black p-8 flex justify-center items-center">
         <div className="bg-gray-900 p-6 rounded-lg shadow-lg max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-white mb-4">{event.title}</h1>
-          <p className="text-white mb-6">No photos available in this gallery yet.</p>
+          <p className="text-white mb-6">Aún no hay fotos disponibles en esta galería.</p>
           <Link href={`/capture/${code}`} className="px-4 py-2 bg-orange-500 text-white rounded-md">
-            Add Photos
+            Agregar Fotos
           </Link>
         </div>
       </div>
@@ -163,23 +163,23 @@ export default function PublicGalleryPage({ params }) {
                 onClick={() => setCurrentView('grid')}
                 className={`px-3 py-1 ${currentView === 'grid' ? 'bg-orange-500' : 'bg-gray-800'}`}
               >
-                Grid
+                Cuadrícula
               </button>
               <button
                 onClick={() => setCurrentView('masonry')}
                 className={`px-3 py-1 ${currentView === 'masonry' ? 'bg-orange-500' : 'bg-gray-800'}`}
               >
-                Masonry
+                Mosaico
               </button>
             </div>
             
             <Link href={`/capture/${code}`} className="text-sm bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded">
-              Add Photos
+              Añadir Fotos
             </Link>
             
             {isCreator && (
               <Link href={`/events/${code}`} className="text-sm bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded">
-                Admin Panel
+                Panel Admin
               </Link>
             )}
           </div>
@@ -199,7 +199,7 @@ export default function PublicGalleryPage({ params }) {
               >
                 <img 
                   src={photo.url} 
-                  alt={`Photo by ${photo.creator}`} 
+                  alt={`Foto de ${photo.creator}`} 
                   className="w-full h-full object-cover transition duration-300 ease-in-out group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
@@ -221,7 +221,7 @@ export default function PublicGalleryPage({ params }) {
               >
                 <img 
                   src={photo.url} 
-                  alt={`Photo by ${photo.creator}`} 
+                  alt={`Foto de ${photo.creator}`} 
                   className="w-full object-cover transition duration-300 ease-in-out group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
@@ -238,7 +238,7 @@ export default function PublicGalleryPage({ params }) {
       {/* Footer */}
       <footer className="bg-black/80 border-t border-gray-800 py-4">
         <div className="container mx-auto px-4 text-center text-gray-500">
-          <p>Gallery contains {photos.length} photos • Created with Snapify</p>
+          <p>La galería contiene {photos.length} fotos • Creada con Snapify</p>
         </div>
       </footer>
       
@@ -285,7 +285,7 @@ export default function PublicGalleryPage({ params }) {
           >
             <img 
               src={selectedPhoto.url} 
-              alt={`Photo by ${selectedPhoto.creator}`} 
+              alt={`Foto de ${selectedPhoto.creator}`} 
               className="max-h-[80vh] max-w-full mx-auto object-contain"
             />
             
@@ -293,7 +293,7 @@ export default function PublicGalleryPage({ params }) {
               <div className="flex justify-between items-center">
                 <p className="font-medium">{selectedPhoto.creator}</p>
                 <p className="text-sm text-gray-400">
-                  {new Date(selectedPhoto.createdAt).toLocaleDateString()} at{' '}
+                  {new Date(selectedPhoto.createdAt).toLocaleDateString()} a las{' '}
                   {new Date(selectedPhoto.createdAt).toLocaleTimeString()}
                 </p>
               </div>
@@ -306,7 +306,7 @@ export default function PublicGalleryPage({ params }) {
                   className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 text-sm"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  Download
+                  Descargar
                 </a>
               </div>
             </div>

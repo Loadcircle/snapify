@@ -40,7 +40,8 @@ export async function middleware(request) {
   if (
     pathname.match(/^\/events\/[^/]+$/) && 
     !pathname.includes('/capture') &&
-    !pathname.includes('/invite')
+    !pathname.includes('/invite') &&
+    !pathname.includes('/invitations')
   ) {
     // If user is not authenticated, redirect to the signin page
     if (!isAuth) {

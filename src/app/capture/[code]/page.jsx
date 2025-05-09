@@ -11,9 +11,9 @@ import Image from 'next/image';
 const FILTERS = {
   none: { name: 'Normal', css: '' },
   sepia: { name: 'Vintage', css: 'sepia(0.7)' },
-  grayscale: { name: 'B&W', css: 'grayscale(1)' },
-  contrast: { name: 'Vivid', css: 'contrast(1.5) saturate(1.5)' },
-  warm: { name: 'Warm', css: 'sepia(0.3) saturate(1.6) hue-rotate(-15deg)' },
+  grayscale: { name: 'B&N', css: 'grayscale(1)' },
+  contrast: { name: 'Vívido', css: 'contrast(1.5) saturate(1.5)' },
+  warm: { name: 'Cálido', css: 'sepia(0.3) saturate(1.6) hue-rotate(-15deg)' },
 };
 
 export default function CapturePhotoPage({ params }) {
@@ -75,9 +75,9 @@ export default function CapturePhotoPage({ params }) {
         
         if (!response.ok) {
           if (response.status === 404) {
-            throw new Error('Event not found. Please check the code and try again.');
+            throw new Error('Evento no encontrado. Por favor verifica el código e inténtalo de nuevo.');
           }
-          throw new Error('Failed to load event. Please try again.');
+          throw new Error('Error al cargar el evento. Por favor inténtalo de nuevo.');
         }
         
         const data = await response.json();
@@ -95,7 +95,7 @@ export default function CapturePhotoPage({ params }) {
         }
       } catch (error) {
         console.error('Error fetching event:', error);
-        setError(error.message || 'Failed to load event. Please try again.');
+        setError(error.message || 'Error al cargar el evento. Por favor inténtalo de nuevo.');
       } finally {
         setIsLoading(false);
       }
@@ -147,7 +147,7 @@ export default function CapturePhotoPage({ params }) {
       setCreatorNameSet(true);
       startCamera();
     } else {
-      toast.error('Please enter your name');
+      toast.error('Por favor ingresa tu nombre');
     }
   };
   
@@ -485,20 +485,20 @@ export default function CapturePhotoPage({ params }) {
   
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center p-4">
-        <div className="animate-pulse text-white text-xl">Loading...</div>
+      <div className="h-[100vh] max-h-[100vh] overflow-hidden bg-gray-900 flex justify-center items-center p-4">
+        <div className="animate-pulse text-white text-xl">Cargando...</div>
       </div>
     );
   }
   
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center p-4">
+      <div className="h-[100vh] max-h-[100vh] overflow-hidden bg-gray-900 flex justify-center items-center p-4">
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-4">Error</h1>
           <p className="text-white mb-6">{error}</p>
           <Link href="/" className="px-4 py-2 bg-blue-600 text-white rounded-md">
-            Go Back Home
+            Volver al Inicio
           </Link>
         </div>
       </div>
@@ -517,12 +517,12 @@ export default function CapturePhotoPage({ params }) {
   
   if (isExpired) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center p-4">
+      <div className="h-[100vh] max-h-[100vh] overflow-hidden bg-gray-900 flex justify-center items-center p-4">
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full text-center">
-          <h1 className="text-2xl font-bold text-yellow-500 mb-4">Event Expired</h1>
-          <p className="text-white mb-6">This event has expired and is no longer accepting photos.</p>
+          <h1 className="text-2xl font-bold text-yellow-500 mb-4">Evento Expirado</h1>
+          <p className="text-white mb-6">Este evento ha expirado y ya no acepta fotos.</p>
           <Link href="/" className="px-4 py-2 bg-blue-600 text-white rounded-md">
-            Go Back Home
+            Volver al Inicio
           </Link>
         </div>
       </div>
@@ -531,12 +531,12 @@ export default function CapturePhotoPage({ params }) {
   
   if (isMaxPhotosReached) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center p-4">
+      <div className="h-[100vh] max-h-[100vh] overflow-hidden bg-gray-900 flex justify-center items-center p-4">
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full text-center">
-          <h1 className="text-2xl font-bold text-yellow-500 mb-4">Maximum Photos Reached</h1>
-          <p className="text-white mb-6">This event has reached its maximum photo limit.</p>
+          <h1 className="text-2xl font-bold text-yellow-500 mb-4">Límite de Fotos Alcanzado</h1>
+          <p className="text-white mb-6">Este evento ha alcanzado su límite máximo de fotos.</p>
           <Link href={`/events/${code}`} className="px-4 py-2 bg-blue-600 text-white rounded-md">
-            View Event Gallery
+            Ver Galería del Evento
           </Link>
         </div>
       </div>
@@ -546,10 +546,10 @@ export default function CapturePhotoPage({ params }) {
   // Creator name input view
   if (!creatorNameSet) {
     return (
-      <div className="min-h-screen bg-black flex justify-center items-center p-4">
+      <div className="h-[100vh] max-h-[100vh] overflow-hidden bg-black flex justify-center items-center p-4">
         <div className="p-6 rounded-lg max-w-md w-full bg-black">
           <h1 className="text-xl font-bold text-white mb-4 text-center">{event.title}</h1>
-          <p className="text-white mb-6 text-center">What's your name?</p>
+          <p className="text-white mb-6 text-center">¿Cuál es tu nombre?</p>
           
           <div className="space-y-4">
             <input
@@ -559,7 +559,7 @@ export default function CapturePhotoPage({ params }) {
               onChange={(e) => setCreator(e.target.value)}
               required
               className="w-full p-3 border rounded-lg bg-gray-900 text-white border-gray-700"
-              placeholder="Enter your name"
+              placeholder="Ingresa tu nombre"
             />
             
             <button
@@ -567,7 +567,7 @@ export default function CapturePhotoPage({ params }) {
               disabled={!creator.trim()}
               className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg disabled:bg-blue-800 disabled:opacity-50"
             >
-              Continue to Camera
+              Continuar a la Cámara
             </button>
           </div>
         </div>
@@ -578,7 +578,7 @@ export default function CapturePhotoPage({ params }) {
   // Fullscreen photo view
   if (fullscreenPhoto) {
     return (
-      <div className="fixed inset-0 bg-black z-50 flex flex-col">
+      <div className="fixed inset-0 h-[100vh] max-h-[100vh] overflow-hidden bg-black z-50 flex flex-col">
         <div className="absolute top-0 left-0 right-0 p-3 flex justify-between items-center bg-gradient-to-b from-black/70 to-transparent">
           <button onClick={closePhotoView} className="text-white p-2">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -605,7 +605,7 @@ export default function CapturePhotoPage({ params }) {
   // Gallery view
   if (showGallery) {
     return (
-      <div className="min-h-screen bg-black flex flex-col">
+      <div className="h-[100vh] max-h-[100vh] overflow-hidden bg-black flex flex-col">
         {/* Gallery header - made smaller and more subtle */}
         <div className="bg-black p-3 text-white border-b border-gray-800">
           <div className="mx-auto flex justify-between items-center">
@@ -617,18 +617,18 @@ export default function CapturePhotoPage({ params }) {
             </button>
             <h1 className="text-sm font-medium">{event.title}</h1>
             <Link href={`/events/${code}`} className="text-sm text-blue-400">
-              Gallery
+              Galería
             </Link>
           </div>
         </div>
         
         {/* Gallery content */}
         <div className="flex-1 p-2 w-full">
-          <h2 className="text-white text-sm mb-2 px-2">Your Photos ({devicePhotos.length})</h2>
+          <h2 className="text-white text-sm mb-2 px-2">Tus Fotos ({devicePhotos.length})</h2>
           
           {devicePhotos.length === 0 ? (
             <div className="text-center text-white p-8">
-              <p>You haven't taken any photos yet.</p>
+              <p>Aún no has tomado ninguna foto.</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-1">
@@ -654,21 +654,21 @@ export default function CapturePhotoPage({ params }) {
   
   // Camera view
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="h-[100vh] max-h-[100vh] overflow-hidden bg-black flex flex-col">
       {/* Main content - removed the header for fullscreen camera experience */}
-      <div className="flex-1 flex flex-col w-full relative">
+      <div className="flex-1 flex flex-col w-full relative h-full">
         {!photoTaken ? (
           <>
             {/* Camera view - made full width/height with no padding */}
             <div className="relative w-full h-full bg-black flex-1">
               {!stream && (
                 <div className="absolute inset-0 flex items-center justify-center flex-col">
-                  <p className="text-white mb-4">Camera access required</p>
+                  <p className="text-white mb-4">Se requiere acceso a la cámara</p>
                   <button
                     onClick={startCamera}
                     className="px-4 py-2 bg-blue-600 text-white rounded-md"
                   >
-                    Start Camera
+                    Iniciar Cámara
                   </button>
                 </div>
               )}
@@ -781,7 +781,7 @@ export default function CapturePhotoPage({ params }) {
                     ></div>
                   </div>
                   <p className="text-xs text-center mt-2 text-white">
-                    Uploading... {uploadProgress}%
+                    Subiendo... {uploadProgress}%
                   </p>
                 </div>
               )}
@@ -789,7 +789,7 @@ export default function CapturePhotoPage({ params }) {
               {uploadSuccess && (
                 <div className="bg-green-900/70 backdrop-blur-sm p-4 rounded-lg text-center">
                   <div className="text-green-400 text-xl mb-2">✓</div>
-                  <p className="text-white">Photo uploaded successfully!</p>
+                  <p className="text-white">¡Foto subida exitosamente!</p>
                 </div>
               )}
             </div>
