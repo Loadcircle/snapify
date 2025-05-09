@@ -12,9 +12,17 @@ const FILTERS = {
   warm: { name: 'Warm', css: 'sepia(0.3) saturate(1.6) hue-rotate(-15deg)' },
 };
 
+// Allowed photo package sizes - must match the values in the API
+const ALLOWED_PHOTO_PACKAGES = [30, 50, 75, 100, 150, 200];
+
 export default function EventForm({ onSubmit, initialData = {} }) {
+  // Ensure initial maxPhotos is a valid value
+  const defaultMaxPhotos = initialData.maxPhotos && ALLOWED_PHOTO_PACKAGES.includes(initialData.maxPhotos) 
+    ? initialData.maxPhotos 
+    : 50;
+    
   const [formData, setFormData] = useState({
-    maxPhotos: initialData.maxPhotos || 50,
+    maxPhotos: defaultMaxPhotos,
   });
   
   const [error, setError] = useState('');
@@ -22,15 +30,34 @@ export default function EventForm({ onSubmit, initialData = {} }) {
   
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'maxPhotos' ? parseInt(value, 10) : value
-    }));
+    
+    if (name === 'maxPhotos') {
+      const numValue = parseInt(value, 10);
+      // Only allow valid photo package values
+      if (ALLOWED_PHOTO_PACKAGES.includes(numValue)) {
+        setFormData(prev => ({
+          ...prev,
+          [name]: numValue
+        }));
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
   
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    // Double-check that maxPhotos is valid before submitting
+    if (!ALLOWED_PHOTO_PACKAGES.includes(formData.maxPhotos)) {
+      setError(`Paquete de fotos inválido. Valores permitidos: ${ALLOWED_PHOTO_PACKAGES.join(', ')}`);
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
@@ -46,7 +73,7 @@ export default function EventForm({ onSubmit, initialData = {} }) {
       await onSubmit(eventData);
     } catch (error) {
       console.error('Error submitting form:', error);
-      setError('Failed to save event. Please try again.');
+      setError(error.message || 'Error al guardar el evento. Por favor intenta de nuevo.');
     } finally {
       setIsSubmitting(false);
     }
@@ -68,6 +95,8 @@ export default function EventForm({ onSubmit, initialData = {} }) {
     }));
   };
   
+  // For now, we're only showing 30 and 50 options in the UI
+  // But we validate against all allowed values
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
@@ -77,30 +106,76 @@ export default function EventForm({ onSubmit, initialData = {} }) {
       )}
       
       <div>
-        <label htmlFor="maxPhotos" className="block text-sm font-medium mb-1">
-          Límite de fotos
+        <label className="block text-lg font-medium mb-4 text-center">
+          Paquete de fotos
         </label>
-        <input
-          type="number"
-          id="maxPhotos"
-          name="maxPhotos"
-          value={formData.maxPhotos}
-          onChange={handleChange}
-          required
-          min="1"
-          className="w-full p-2 border rounded-md"
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          Número máximo de fotos permitidas para este evento
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div className="relative">
+            <input 
+              type="radio" 
+              id="photos30" 
+              name="maxPhotos" 
+              value="30" 
+              checked={formData.maxPhotos === 30}
+              onChange={handleChange}
+              className="sr-only" 
+            />
+            <label 
+              htmlFor="photos30" 
+              className={`block py-6 px-4 rounded-lg text-center cursor-pointer transition-all ${
+                formData.maxPhotos === 30 
+                  ? 'bg-orange-500 text-white shadow-lg' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+              }`}
+            >
+              <div className="text-3xl font-bold mb-1">30</div>
+              <div className="text-sm">fotos</div>
+            </label>
+          </div>
+          
+          <div className="relative">
+            <input 
+              type="radio" 
+              id="photos50" 
+              name="maxPhotos" 
+              value="50" 
+              checked={formData.maxPhotos === 50}
+              onChange={handleChange}
+              className="sr-only" 
+            />
+            <label 
+              htmlFor="photos50" 
+              className={`block py-6 px-4 rounded-lg text-center cursor-pointer transition-all ${
+                formData.maxPhotos === 50 
+                  ? 'bg-orange-500 text-white shadow-lg' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+              }`}
+            >
+              <div className="text-3xl font-bold mb-1">50</div>
+              <div className="text-sm">fotos</div>
+            </label>
+          </div>
+        </div>
+        
+        <p className="text-xs text-gray-500 mt-3 text-center">
+          Selecciona el número máximo de fotos para tu evento
         </p>
       </div>
+      
+      {/* Hidden field to prevent tampering - this ensures the value is always one of the allowed values */}
+      <input 
+        type="hidden" 
+        name="maxPhotosValidation" 
+        value={ALLOWED_PHOTO_PACKAGES.includes(formData.maxPhotos) ? formData.maxPhotos : 50} 
+      />
       
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300"
+        className="w-full py-3 px-4 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:bg-orange-300 font-medium text-lg"
       >
-        {isSubmitting ? 'Creating...' : 'Create Event'}
+        {isSubmitting ? 'Creando...' : 'Crear Evento'}
       </button>
     </form>
   );

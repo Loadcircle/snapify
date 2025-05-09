@@ -9,10 +9,12 @@ export default function CreateEventPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [limitReached, setLimitReached] = useState(false);
   
   const handleSubmit = async (data) => {
     setIsSubmitting(true);
     setError('');
+    setLimitReached(false);
     
     try {
       const response = await fetch('/api/events', {
@@ -23,41 +25,60 @@ export default function CreateEventPage() {
         body: JSON.stringify(data),
       });
       
+      const responseData = await response.json();
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create event');
+        // Check if this is a limit reached error
+        if (response.status === 403 && responseData.limitReached) {
+          setLimitReached(true);
+          throw new Error(responseData.error || 'Has alcanzado el límite de eventos gratuitos');
+        }
+        
+        throw new Error(responseData.error || 'Error al crear el evento');
       }
       
-      const event = await response.json();
-      
       // Redirect to the event page
-      router.push(`/events/${event.code}`);
+      router.push(`/events/${responseData.code}`);
     } catch (error) {
-      console.error('Error creating event:', error);
-      setError(error.message || 'Failed to create event. Please try again.');
+      console.error('Error al crear el evento:', error);
+      setError(error.message || 'Error al crear el evento. Por favor intenta de nuevo.');
       setIsSubmitting(false);
     }
   };
   
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-md mx-auto">
-        <div className="mb-6">
-          <Link href="/" className="text-blue-600 hover:underline">
-            &larr; Back to Home
-          </Link>
-        </div>
-        
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold mb-6">Create New Event</h1>
+    <div className="min-h-screen bg-amber-50">
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-md mx-auto">
+          <div className="mb-6">
+            <Link href="/" className="text-orange-600 hover:text-orange-700 flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Volver al inicio
+            </Link>
+          </div>
           
-          {error && (
-            <div className="bg-red-50 p-4 rounded-md text-red-500 mb-6">
-              {error}
-            </div>
-          )}
-          
-          <EventForm onSubmit={handleSubmit} />
+          <div className="bg-white shadow-lg rounded-lg p-8 border-t-4 border-orange-500">
+            <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">Crear Nuevo Evento</h1>
+            
+            {error && (
+              <div className={`p-4 rounded-md mb-6 border ${limitReached ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-red-50 text-red-500 border-red-200'}`}>
+                <p>{error}</p>
+                
+                {limitReached && (
+                  <div className="mt-4">
+                    <p className="mb-2">Si deseas crear más eventos, puedes comprar paquetes adicionales. Estamos trabajando para ofrecerte más opciones de pago.</p>
+                    <Link href="/dashboard" className="text-orange-600 hover:text-orange-700 font-medium">
+                      Ver mis eventos actuales →
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {!limitReached && <EventForm onSubmit={handleSubmit} />}
+          </div>
         </div>
       </div>
     </div>

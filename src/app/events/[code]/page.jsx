@@ -32,6 +32,7 @@ export default function EventPage({ params }) {
   const [expiresAt, setExpiresAt] = useState('');
   const [allowedFilters, setAllowedFilters] = useState(['none']);
   const [maxPhotosPerUser, setMaxPhotosPerUser] = useState('');
+  const [maxPhotosPerUserError, setMaxPhotosPerUserError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -43,9 +44,9 @@ export default function EventPage({ params }) {
         
         if (!response.ok) {
           if (response.status === 404) {
-            throw new Error('Event not found. Please check the code and try again.');
+            throw new Error('Evento no encontrado. Por favor verifica el código e intenta de nuevo.');
           }
-          throw new Error('Failed to load event. Please try again.');
+          throw new Error('Error al cargar el evento. Por favor intenta de nuevo.');
         }
         
         const data = await response.json();
@@ -57,8 +58,8 @@ export default function EventPage({ params }) {
         setAllowedFilters(data.allowedFilters ? data.allowedFilters.split(',') : ['none']);
         setMaxPhotosPerUser(data.maxPhotosPerUser || data.maxPhotos);
       } catch (error) {
-        console.error('Error fetching event:', error);
-        setError(error.message || 'Failed to load event. Please try again.');
+        console.error('Error al cargar el evento:', error);
+        setError(error.message || 'Error al cargar el evento. Por favor intenta de nuevo.');
       } finally {
         setIsLoading(false);
       }
@@ -82,8 +83,45 @@ export default function EventPage({ params }) {
     }));
   };
   
+  const handleMaxPhotosPerUserChange = (e) => {
+    const value = e.target.value;
+    
+    // Si el campo está vacío, permitimos borrar el valor
+    if (value === '') {
+      setMaxPhotosPerUser('');
+      setMaxPhotosPerUserError('');
+      return;
+    }
+    
+    const numValue = parseInt(value, 10);
+    
+    // Validar que sea un número positivo
+    if (isNaN(numValue) || numValue <= 0) {
+      setMaxPhotosPerUserError('Debe ser un número positivo');
+      setMaxPhotosPerUser(value);
+      return;
+    }
+    
+    // Validar que no exceda el máximo de fotos del evento
+    if (numValue > event.maxPhotos) {
+      setMaxPhotosPerUserError(`No puede exceder el máximo del evento (${event.maxPhotos})`);
+      setMaxPhotosPerUser(value);
+      return;
+    }
+    
+    // Si pasa todas las validaciones
+    setMaxPhotosPerUserError('');
+    setMaxPhotosPerUser(numValue);
+  };
+  
   const handleSaveChanges = async () => {
     if (!event) return;
+    
+    // Validar antes de guardar
+    if (maxPhotosPerUserError) {
+      toast.error('Por favor corrige los errores antes de guardar');
+      return;
+    }
     
     setIsSaving(true);
     
@@ -109,7 +147,7 @@ export default function EventPage({ params }) {
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update event');
+        throw new Error(errorData.error || 'Error al actualizar el evento');
       }
       
       const data = await response.json();
@@ -121,10 +159,10 @@ export default function EventPage({ params }) {
       });
       
       setIsEditing(false);
-      toast.success('Event updated successfully!');
+      toast.success('¡Evento actualizado exitosamente!');
     } catch (error) {
-      console.error('Error updating event:', error);
-      toast.error(error.message || 'Failed to update event. Please try again.');
+      console.error('Error al actualizar el evento:', error);
+      toast.error(error.message || 'Error al actualizar el evento. Por favor intenta de nuevo.');
     } finally {
       setIsSaving(false);
     }
@@ -152,7 +190,7 @@ export default function EventPage({ params }) {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="flex justify-center items-center min-h-[400px]">
-          <p className="text-gray-500">Loading event...</p>
+          <p className="text-gray-500">Cargando evento...</p>
         </div>
       </div>
     );
@@ -162,7 +200,7 @@ export default function EventPage({ params }) {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="flex justify-center items-center min-h-[400px]">
-          <p className="text-gray-500">Loading event...</p>
+          <p className="text-gray-500">Cargando evento...</p>
         </div>
       </div>
     );
@@ -173,8 +211,8 @@ export default function EventPage({ params }) {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-md mx-auto">
           <div className="mb-6">
-            <Link href="/dashboard" className="text-blue-600 hover:underline">
-              &larr; Back to Home
+            <Link href="/dashboard" className="text-orange-600 hover:underline">
+              &larr; Volver al Dashboard
             </Link>
           </div>
           
@@ -200,36 +238,36 @@ export default function EventPage({ params }) {
   return (
     <div className="container mx-auto px-4 py-6 sm:py-12">
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <Link href="/dashboard" className="text-blue-600 hover:underline flex items-center">
+        <Link href="/dashboard" className="text-orange-600 hover:text-orange-700 flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to Dashboard
+          Volver al Dashboard
         </Link>
         
         <div className="flex flex-wrap gap-3 w-full sm:w-auto">
           <Link 
+            href={`/invitations/${code}`}
+            className="px-4 py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 flex items-center text-sm flex-1 sm:flex-auto justify-center sm:justify-start font-medium shadow-md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm5 11a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+              <path d="M4.5 6.5A1.5 1.5 0 016 5h.5a.5.5 0 010 1H6a.5.5 0 00-.5.5v7a.5.5 0 00.5.5h7a.5.5 0 00.5-.5v-.5a.5.5 0 011 0v.5a1.5 1.5 0 01-1.5 1.5h-7A1.5 1.5 0 014.5 13.5v-7z" />
+            </svg>
+            Ver Invitación
+          </Link>
+          
+          <Link 
             href={`/events/${code}/gallery`}
             target='_blank'
-            className="px-3 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 flex items-center text-sm flex-1 sm:flex-auto justify-center sm:justify-start"
+            className="px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 flex items-center text-sm flex-1 sm:flex-auto justify-center sm:justify-start"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            View Gallery
-          </Link>
-          
-          <Link 
-            href={`/events/${code}/invite`}
-            className="px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center text-sm flex-1 sm:flex-auto justify-center sm:justify-start"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm5 11a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-              <path d="M4.5 6.5A1.5 1.5 0 016 5h.5a.5.5 0 010 1H6a.5.5 0 00-.5.5v7a.5.5 0 00.5.5h7a.5.5 0 00.5-.5v-.5a.5.5 0 011 0v.5a1.5 1.5 0 01-1.5 1.5h-7A1.5 1.5 0 014.5 13.5v-7z" />
-            </svg>
-            Invitation
+            Ver Galería
           </Link>
           
           <Link 
@@ -252,11 +290,11 @@ export default function EventPage({ params }) {
           {/* Event Details Form */}
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-bold mb-4">Event Details</h2>
+              <h2 className="text-xl font-bold mb-4">Detalles del Evento</h2>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Title
+                    Título
                   </label>
                   <input
                     type="text"
@@ -264,50 +302,38 @@ export default function EventPage({ params }) {
                     onChange={(e) => setTitle(e.target.value)}
                     className="w-full p-2 border rounded-md"
                   />
-                </div>
-                
-                <div>
-                  <p className="block text-sm font-medium mb-1">
-                    Event Code: <span className="font-mono font-bold">{event.code}</span>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Nombre de tu evento que verán tus invitados en la galería.
                   </p>
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Expiration Date
-                  </label>
-                  <input
-                    type="date"
-                    value={expiresAt}
-                    onChange={(e) => setExpiresAt(e.target.value)}
-                    className="w-full p-2 border rounded-md"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Photos per User Limit (Optional)
+                    Límite de Fotos por Usuario (Opcional)
                   </label>
                   <input
                     type="number"
                     value={maxPhotosPerUser}
-                    onChange={(e) => setMaxPhotosPerUser(e.target.value)}
+                    onChange={handleMaxPhotosPerUserChange}
                     min="1"
                     max={event.maxPhotos}
-                    placeholder={`Default: ${event.maxPhotos}`}
-                    className="w-full p-2 border rounded-md"
+                    placeholder={`Predeterminado: ${event.maxPhotos}`}
+                    className={`w-full p-2 border rounded-md ${maxPhotosPerUserError ? 'border-red-500' : ''}`}
                   />
+                  {maxPhotosPerUserError && (
+                    <p className="text-xs text-red-500 mt-1">{maxPhotosPerUserError}</p>
+                  )}
                   <p className="text-xs text-gray-500 mt-1">
-                    Maximum number of photos each user can upload. Leave empty to use event limit.
+                    Número máximo de fotos que cada invitado puede subir. Deja vacío para usar el límite total del evento ({event.maxPhotos} fotos). Esto te permite controlar cuántas fotos puede aportar cada persona.
                   </p>
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Allowed Filters
+                    Filtros Permitidos
                   </label>
                   <div className="mb-1 text-xs text-gray-500">
-                    Select the filters you want to allow for this event. At least one filter must be selected.
+                    Selecciona los filtros que deseas permitir para este evento. Al menos un filtro debe estar seleccionado. Estos son los efectos que podrán utilizar tus invitados al tomar fotos.
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
                     {Object.entries(FILTERS).map(([id, filter]) => (
@@ -335,10 +361,10 @@ export default function EventPage({ params }) {
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={handleSaveChanges}
-                    disabled={isSaving}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 text-sm"
+                    disabled={isSaving || maxPhotosPerUserError}
+                    className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:bg-orange-300 text-sm"
                   >
-                    {isSaving ? 'Saving...' : 'Save Changes'}
+                    {isSaving ? 'Guardando...' : 'Guardar Cambios'}
                   </button>
                 </div>
               </div>
@@ -348,41 +374,57 @@ export default function EventPage({ params }) {
           {/* Event Stats */}
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-bold mb-4">Event Statistics</h2>
+              <h2 className="text-xl font-bold mb-4">Estadísticas del Evento</h2>
               <div className="bg-gray-50 p-4 rounded-lg space-y-4">
                 <div>
-                  <p className="text-sm text-gray-500">Total Photos</p>
+                  <p className="text-sm text-gray-500">Código del Evento</p>
+                  <p className="text-lg font-semibold font-mono">{event.code}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Código único para acceder a tu evento.
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Total de Fotos</p>
                   <p className="text-2xl font-bold">{event.usedPhotos} / {event.maxPhotos}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Número de fotos subidas hasta el momento y límite total del paquete contratado.
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Expiration Date</p>
+                  <p className="text-sm text-gray-500">Fecha de Expiración</p>
                   <p className="text-lg font-semibold">{new Date(event.expiresAt).toLocaleDateString()}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Fecha hasta la que estará disponible tu evento y sus fotos. Después de esta fecha, no se podrán añadir más fotos.
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Photos per User Limit</p>
+                  <p className="text-sm text-gray-500">Límite de Fotos por Usuario</p>
                   <p className="text-lg font-semibold">{maxPhotosPerUser || event.maxPhotos}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Número máximo de fotos que cada invitado puede subir a este evento.
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="bg-blue-50 p-4 rounded-md text-blue-700">
-              <p className="font-semibold">Admin View</p>
-              <p className="text-sm">This is the admin view for managing this event. Guests can upload photos by scanning the QR code or visiting the invitation page.</p>
+              <p className="font-semibold">Vista de Administrador</p>
+              <p className="text-sm">Esta es la vista de administrador para gestionar este evento. Los invitados pueden subir fotos escaneando el código QR o visitando la página de invitación.</p>
             </div>
           </div>
         </div>
         
         {isExpired ? (
           <div className="bg-yellow-50 p-4 rounded-md text-yellow-700 mt-6">
-            This event has expired. You can view photos but cannot add new ones.
+            Este evento ha expirado. Puedes ver las fotos pero no puedes añadir nuevas.
           </div>
         ) : isMaxPhotosReached ? (
           <div className="bg-yellow-50 p-4 rounded-md text-yellow-700 mt-6">
-            This event has reached the maximum number of photos. You can view photos but cannot add new ones.
+            Este evento ha alcanzado el número máximo de fotos. Puedes ver las fotos pero no puedes añadir nuevas.
           </div>
         ) : (
           <div className="mt-6">
-            <h2 className="text-xl font-bold mb-4">Add Photos (Admin Upload)</h2>
+            <h2 className="text-xl font-bold mb-4">Añadir Fotos (Subida de Administrador)</h2>
             <PhotoUploader 
               eventId={event.id} 
               eventCode={event.code}
@@ -393,7 +435,7 @@ export default function EventPage({ params }) {
         )}
         
         <div className="mt-6">
-          <h2 className="text-xl font-bold mb-4">Photo Gallery</h2>
+          <h2 className="text-xl font-bold mb-4">Galería de Fotos</h2>
           <PhotoGallery eventId={event.id} isAdminView={true} />
         </div>
       </div>
