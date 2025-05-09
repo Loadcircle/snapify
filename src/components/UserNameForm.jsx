@@ -22,7 +22,7 @@ export default function UserNameForm({ initialName = '', onSave }) {
   return (
     <div className="border rounded-md p-4 mb-4 bg-white">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Your Name</h3>
+        <h3 className="text-sm font-medium">Tu Nombre</h3>
         {!isEditing && (
           <button
             type="button"
@@ -42,7 +42,7 @@ export default function UserNameForm({ initialName = '', onSave }) {
             onChange={(e) => setName(e.target.value)}
             onKeyDown={handleKeyDown}
             className="w-full p-2 border rounded-md"
-            placeholder="Enter your name"
+            placeholder="Ingresa tu nombre"
             autoFocus
           />
           <div className="mt-2 flex justify-end space-x-2">

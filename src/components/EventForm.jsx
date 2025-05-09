@@ -78,7 +78,7 @@ export default function EventForm({ onSubmit, initialData = {} }) {
       
       <div>
         <label htmlFor="maxPhotos" className="block text-sm font-medium mb-1">
-          Maximum Photos
+          Límite de fotos
         </label>
         <input
           type="number"
@@ -91,7 +91,7 @@ export default function EventForm({ onSubmit, initialData = {} }) {
           className="w-full p-2 border rounded-md"
         />
         <p className="text-xs text-gray-500 mt-1">
-          Choose how many photos can be uploaded to this event
+          Número máximo de fotos permitidas para este evento
         </p>
       </div>
       

@@ -44,13 +44,13 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded, isA
     if (!file) return;
     
     if (!file.type.includes('image/')) {
-      setError('Please select an image file');
+      setError('Por favor, seleccione un archivo de imagen');
       return;
     }
     
     // Limit file size to 5MB
     if (file.size > 5 * 1024 * 1024) {
-      setError('File size must be less than 5MB');
+      setError('El tamaño del archivo debe ser menor de 5MB');
       return;
     }
     
@@ -69,12 +69,12 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded, isA
     e.preventDefault();
     
     if (!selectedFile) {
-      setError('Please select an image to upload');
+      setError('Por favor, seleccione una imagen para subir');
       return;
     }
     
     if (!creator.trim() && !isAdminView) {
-      setError('Please enter your name');
+      setError('Por favor, ingrese su nombre');
       return;
     }
     
@@ -164,8 +164,8 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded, isA
         )}
         
         <div className="text-center mb-4">
-          <h3 className="text-lg font-medium">Before you start</h3>
-          <p className="text-sm text-gray-500">Please tell us your name first</p>
+          <h3 className="text-lg font-medium">Antes de comenzar</h3>
+          <p className="text-sm text-gray-500">Por favor, dinos tu nombre primero</p>
         </div>
         
         <UserNameForm initialName={creator} onSave={handleSaveName} />
@@ -189,7 +189,7 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded, isA
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="photo" className="block text-sm font-medium mb-1">
-            Select Photo
+            Seleccionar foto
           </label>
           <input
             type="file"
@@ -200,13 +200,13 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded, isA
             className="w-full p-2 border rounded-md"
           />
           <p className="text-xs text-gray-500 mt-1">
-            Max file size: 5MB. Supported formats: JPG, PNG, GIF
+            Formatos permitidos: JPG, PNG, GIF (máx. 5MB)
           </p>
         </div>
         
         {preview && (
           <div className="mt-4">
-            <p className="text-sm font-medium mb-1">Preview</p>
+            <p className="text-sm font-medium mb-1">Vista previa</p>
             <img 
               src={preview} 
               alt="Preview" 
@@ -224,7 +224,7 @@ export default function PhotoUploader({ eventId, eventCode, onPhotoUploaded, isA
               ></div>
             </div>
             <p className="text-xs text-center mt-1 text-gray-500">
-              Uploading... {uploadProgress}%
+              Arrastra y suelta una imagen aquí o haz clic para seleccionar
             </p>
           </div>
         )}
