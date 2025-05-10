@@ -1,6 +1,7 @@
 import './globals.css'
 import AuthProvider from '@/components/AuthProvider';
 import { Analytics } from "@vercel/analytics/react"
+import PrefetchRoutes from '@/components/PrefetchRoutes';
 
 export const metadata = {
   title: 'Snapify',
@@ -13,6 +14,7 @@ export default function RootLayout({ children }) {
       <body>
         <Analytics />
         <AuthProvider>
+          <PrefetchRoutes />
           <main>
             {children}
           </main>
